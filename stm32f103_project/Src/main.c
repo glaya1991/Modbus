@@ -157,29 +157,46 @@ int main(void)
 //          test_cnt = 0;
 //      }
 /* Test TIM1: END */    
-          
-     
+                 
     if(flag_tim1){
-          if(u1rx_cnt>1){
-              HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
-              u1tx_cnt = u1rx_cnt;
-              u1rx_cnt = 0;  
-              memcpy(&u1tx_buf, &u1rx_buf, u1tx_cnt);
-              memset(&u1rx_buf, 0, u1tx_cnt);
-              u1tx_flag = 1;
-              transmitter_array(u1tx_buf, u1tx_cnt);
-              u1tx_flag = 0;
-          }else{
-
+          //HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 1);
+                   
+          if(u1tx_cnt<3)
+          {
+              //memcpy(&u1tx_buf, "FAIL\r\n", u1tx_cnt);
           }
+          else
+          {
+
+              if(u1tx_buf[0]!=DEV_ADDR){
+                u1tx_buf[u1tx_cnt+0]='A';
+                u1tx_buf[u1tx_cnt+1]='D';
+                u1tx_buf[u1tx_cnt+2]='R';
+                u1tx_buf[u1tx_cnt+3]='0';
+                u1tx_buf[u1tx_cnt+4]='0';
+                u1tx_cnt += 5;
+                //memcpy(&u1tx_buf, "TEST\r\n", u1tx_cnt);
+              }
+              
+          }
+        
+          
+          u1tx_flag = 1;
+          u1tx_buf[0]=0x30+u1tx_cnt;
+          transmitter_array((uint8_t *)u1tx_buf, 1);
+          u1tx_flag = 0;
+          
+          //memset(&u1tx_buf, 0, u1tx_cnt);
           flag_tim1 = 0;
+          //HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
      }
     
-     if(u1rx_flag){
+    if(u1rx_flag){
          //HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
           u1rx_flag = 0;
           HAL_UART_Receive_IT(&huart1, msg_rx_1byte, 1);
      }
+   
     
   }
   /* USER CODE END 3 */
