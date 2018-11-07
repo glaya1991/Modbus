@@ -215,13 +215,15 @@ uint16_t htim1_max = 0;
 void TIM1_UP_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM1_UP_IRQn 0 */   
-    if(u1rx_flag) htim1_cnt++;
-    if(htim1_cnt==htim1_max){
-        flag_tim1 = 1;
-        u1rx_flag =0;
+    
+    //HAL_GPIO_TogglePin(LED_G1_GPIO_Port, LED_G1_Pin);
+    htim1_cnt++;
+    if(u1rx_cnt){
+        if(htim1_cnt==htim1_max){
+            flag_tim1 = 1;
+        }
     }
-    //HAL_GPIO_TogglePin(LED_R2_GPIO_Port, LED_R2_Pin);
-   HAL_GPIO_WritePin(LED_B2_GPIO_Port, LED_B2_Pin, 1);
+    
   /* USER CODE END TIM1_UP_IRQn 0 */
    HAL_TIM_IRQHandler(&htim1);
   /* USER CODE BEGIN TIM1_UP_IRQn 1 */
@@ -242,12 +244,14 @@ void USART1_IRQHandler(void)
   HAL_UART_IRQHandler(&huart1);
   /* USER CODE BEGIN USART1_IRQn 1 */
  
-    if(!u1tx_flag){
+    if(u1tx_flag==0){
+       HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 1);
         htim1_max = htim1_cnt+4;
-        u1rx_flag = 1;
         u1rx_buf[(u1rx_cnt++)%U1_BUF_SIZE] = receiver();
         if(u1rx_buf[0]!=DEV_ADDR) u1rx_cnt--;
     }
+  
+   u1rx_flag = 1;
   
 //  if(u1rx_cnt==2){u1rx_size = u1rx_buf[1];}
 //  if(u1rx_cnt == u1rx_size)
