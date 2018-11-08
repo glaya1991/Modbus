@@ -123,6 +123,8 @@ int main(void)
   HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
   HAL_UART_Receive_IT(&huart1, msg_rx_1byte, 1);
   HAL_TIM_Base_Start_IT(&htim1);
+  
+  
   while (1)
   {
 
@@ -157,10 +159,16 @@ int main(void)
 //          test_cnt = 0;
 //      }
 /* Test TIM1: END */    
-                 
+    
+          
     if(flag_tim1){
           //HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 1);
-                   
+            
+        u1tx_cnt = u1rx_cnt;
+        memcpy(&u1tx_buf, &u1rx_buf, u1tx_cnt);
+        u1rx_cnt = 0;
+        memset(&u1rx_buf, 0, u1tx_cnt);
+            
           if(u1tx_cnt<3)
           {
               //memcpy(&u1tx_buf, "FAIL\r\n", u1tx_cnt);
