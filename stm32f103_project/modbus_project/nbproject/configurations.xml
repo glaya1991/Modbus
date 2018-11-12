@@ -9,9 +9,13 @@
         </logicalFolder>
       </logicalFolder>
       <logicalFolder name="Src" displayName="Src" projectFiles="true">
+        <itemPath>driver/Src/CRC16ANSI.c</itemPath>
+        <itemPath>driver/Src/MakeMODICON.c</itemPath>
         <itemPath>../Src/dma.c</itemPath>
         <itemPath>../Src/gpio.c</itemPath>
         <itemPath>../Src/main.c</itemPath>
+        <itemPath>driver/Src/parserMODICON.c</itemPath>
+        <itemPath>driver/Src/slaveMODBUStrasact.c</itemPath>
         <itemPath>../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal.c</itemPath>
         <itemPath>../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_cortex.c</itemPath>
         <itemPath>../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_dma.c</itemPath>
@@ -44,8 +48,12 @@
         <logicalFolder name="Legacy" displayName="Legacy" projectFiles="true">
           <itemPath>../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy/stm32_hal_legacy.h</itemPath>
         </logicalFolder>
+        <itemPath>driver/Inc/BLOCKs.DEF</itemPath>
+        <itemPath>driver/Inc/bigdigit.h</itemPath>
+        <itemPath>driver/Inc/c.h</itemPath>
         <itemPath>../Inc/gpio.h</itemPath>
         <itemPath>../Inc/main.h</itemPath>
+        <itemPath>driver/Inc/partitions.DEF</itemPath>
         <itemPath>../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h</itemPath>
         <itemPath>../Inc/stm32f1xx_hal_conf.h</itemPath>
         <itemPath>../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_cortex.h</itemPath>
@@ -64,6 +72,7 @@
         <itemPath>../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h</itemPath>
         <itemPath>../Inc/stm32f1xx_it.h</itemPath>
         <itemPath>../Inc/tim.h</itemPath>
+        <itemPath>driver/Inc/typeS.h</itemPath>
         <itemPath>../Inc/usart.h</itemPath>
       </logicalFolder>
       <logicalFolder name="Include" displayName="Include" projectFiles="true">
@@ -115,6 +124,8 @@
     <Elem>../Drivers/STM32F1xx_HAL_Driver/Inc</Elem>
     <Elem>../Drivers/CMSIS/Include</Elem>
     <Elem>../Drivers/CMSIS/Device/ST/STM32F1xx/Include</Elem>
+    <Elem>driver/Src</Elem>
+    <Elem>driver/Inc</Elem>
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
@@ -132,6 +143,7 @@
             <pElem>../Drivers/STM32F1xx_HAL_Driver/Inc</pElem>
             <pElem>../Inc</pElem>
             <pElem>.</pElem>
+            <pElem>driver/Inc</pElem>
           </incDir>
           <commandLine>-mthumb -mcpu=cortex-m3 -mfloat-abi=soft -Wall --specs=nosys.specs</commandLine>
           <preprocessorList>
@@ -416,6 +428,24 @@
       <item path="crc.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="crc.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="driver/Inc/BLOCKs.DEF" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="driver/Inc/bigdigit.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="driver/Inc/c.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="driver/Inc/partitions.DEF" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="driver/Inc/typeS.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="driver/Src/CRC16ANSI.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="driver/Src/MakeMODICON.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="driver/Src/parserMODICON.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="driver/Src/slaveMODBUStrasact.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="transer.c" ex="false" tool="0" flavor2="0">
       </item>
@@ -715,6 +745,24 @@
       <item path="crc.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="crc.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="driver/Inc/BLOCKs.DEF" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="driver/Inc/bigdigit.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="driver/Inc/c.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="driver/Inc/partitions.DEF" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="driver/Inc/typeS.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="driver/Src/CRC16ANSI.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="driver/Src/MakeMODICON.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="driver/Src/parserMODICON.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="driver/Src/slaveMODBUStrasact.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="transer.c" ex="false" tool="0" flavor2="0">
       </item>

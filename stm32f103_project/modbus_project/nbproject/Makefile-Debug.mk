@@ -58,6 +58,10 @@ OBJECTFILES= \
 	${OBJECTDIR}/_ext/511dc8f5/usart.o \
 	${OBJECTDIR}/_ext/2ac0c52e/startup_stm32f103xb.o \
 	${OBJECTDIR}/crc.o \
+	${OBJECTDIR}/driver/Src/CRC16ANSI.o \
+	${OBJECTDIR}/driver/Src/MakeMODICON.o \
+	${OBJECTDIR}/driver/Src/parserMODICON.o \
+	${OBJECTDIR}/driver/Src/slaveMODBUStrasact.o \
 	${OBJECTDIR}/transer.o
 
 
@@ -88,107 +92,107 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/modbus_project.elf.exe: ${OBJECTFILES
 ${OBJECTDIR}/_ext/3ee57e25/stm32f1xx_hal.o: ../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal.c
 	${MKDIR} -p ${OBJECTDIR}/_ext/3ee57e25
 	${RM} "$@.d"
-	$(COMPILE.c) -g -DSTM32F103xB -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Inc -I. -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/3ee57e25/stm32f1xx_hal.o ../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal.c
+	$(COMPILE.c) -g -DSTM32F103xB -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Inc -I. -Idriver/Inc -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/3ee57e25/stm32f1xx_hal.o ../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal.c
 
 ${OBJECTDIR}/_ext/3ee57e25/stm32f1xx_hal_cortex.o: ../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_cortex.c
 	${MKDIR} -p ${OBJECTDIR}/_ext/3ee57e25
 	${RM} "$@.d"
-	$(COMPILE.c) -g -DSTM32F103xB -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Inc -I. -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/3ee57e25/stm32f1xx_hal_cortex.o ../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_cortex.c
+	$(COMPILE.c) -g -DSTM32F103xB -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Inc -I. -Idriver/Inc -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/3ee57e25/stm32f1xx_hal_cortex.o ../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_cortex.c
 
 ${OBJECTDIR}/_ext/3ee57e25/stm32f1xx_hal_dma.o: ../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_dma.c
 	${MKDIR} -p ${OBJECTDIR}/_ext/3ee57e25
 	${RM} "$@.d"
-	$(COMPILE.c) -g -DSTM32F103xB -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Inc -I. -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/3ee57e25/stm32f1xx_hal_dma.o ../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_dma.c
+	$(COMPILE.c) -g -DSTM32F103xB -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Inc -I. -Idriver/Inc -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/3ee57e25/stm32f1xx_hal_dma.o ../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_dma.c
 
 ${OBJECTDIR}/_ext/3ee57e25/stm32f1xx_hal_flash.o: ../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash.c
 	${MKDIR} -p ${OBJECTDIR}/_ext/3ee57e25
 	${RM} "$@.d"
-	$(COMPILE.c) -g -DSTM32F103xB -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Inc -I. -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/3ee57e25/stm32f1xx_hal_flash.o ../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash.c
+	$(COMPILE.c) -g -DSTM32F103xB -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Inc -I. -Idriver/Inc -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/3ee57e25/stm32f1xx_hal_flash.o ../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash.c
 
 ${OBJECTDIR}/_ext/3ee57e25/stm32f1xx_hal_flash_ex.o: ../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c
 	${MKDIR} -p ${OBJECTDIR}/_ext/3ee57e25
 	${RM} "$@.d"
-	$(COMPILE.c) -g -DSTM32F103xB -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Inc -I. -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/3ee57e25/stm32f1xx_hal_flash_ex.o ../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c
+	$(COMPILE.c) -g -DSTM32F103xB -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Inc -I. -Idriver/Inc -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/3ee57e25/stm32f1xx_hal_flash_ex.o ../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c
 
 ${OBJECTDIR}/_ext/3ee57e25/stm32f1xx_hal_gpio.o: ../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio.c
 	${MKDIR} -p ${OBJECTDIR}/_ext/3ee57e25
 	${RM} "$@.d"
-	$(COMPILE.c) -g -DSTM32F103xB -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Inc -I. -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/3ee57e25/stm32f1xx_hal_gpio.o ../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio.c
+	$(COMPILE.c) -g -DSTM32F103xB -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Inc -I. -Idriver/Inc -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/3ee57e25/stm32f1xx_hal_gpio.o ../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio.c
 
 ${OBJECTDIR}/_ext/3ee57e25/stm32f1xx_hal_gpio_ex.o: ../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio_ex.c
 	${MKDIR} -p ${OBJECTDIR}/_ext/3ee57e25
 	${RM} "$@.d"
-	$(COMPILE.c) -g -DSTM32F103xB -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Inc -I. -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/3ee57e25/stm32f1xx_hal_gpio_ex.o ../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio_ex.c
+	$(COMPILE.c) -g -DSTM32F103xB -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Inc -I. -Idriver/Inc -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/3ee57e25/stm32f1xx_hal_gpio_ex.o ../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio_ex.c
 
 ${OBJECTDIR}/_ext/3ee57e25/stm32f1xx_hal_pwr.o: ../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_pwr.c
 	${MKDIR} -p ${OBJECTDIR}/_ext/3ee57e25
 	${RM} "$@.d"
-	$(COMPILE.c) -g -DSTM32F103xB -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Inc -I. -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/3ee57e25/stm32f1xx_hal_pwr.o ../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_pwr.c
+	$(COMPILE.c) -g -DSTM32F103xB -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Inc -I. -Idriver/Inc -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/3ee57e25/stm32f1xx_hal_pwr.o ../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_pwr.c
 
 ${OBJECTDIR}/_ext/3ee57e25/stm32f1xx_hal_rcc.o: ../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc.c
 	${MKDIR} -p ${OBJECTDIR}/_ext/3ee57e25
 	${RM} "$@.d"
-	$(COMPILE.c) -g -DSTM32F103xB -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Inc -I. -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/3ee57e25/stm32f1xx_hal_rcc.o ../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc.c
+	$(COMPILE.c) -g -DSTM32F103xB -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Inc -I. -Idriver/Inc -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/3ee57e25/stm32f1xx_hal_rcc.o ../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc.c
 
 ${OBJECTDIR}/_ext/3ee57e25/stm32f1xx_hal_rcc_ex.o: ../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc_ex.c
 	${MKDIR} -p ${OBJECTDIR}/_ext/3ee57e25
 	${RM} "$@.d"
-	$(COMPILE.c) -g -DSTM32F103xB -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Inc -I. -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/3ee57e25/stm32f1xx_hal_rcc_ex.o ../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc_ex.c
+	$(COMPILE.c) -g -DSTM32F103xB -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Inc -I. -Idriver/Inc -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/3ee57e25/stm32f1xx_hal_rcc_ex.o ../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc_ex.c
 
 ${OBJECTDIR}/_ext/3ee57e25/stm32f1xx_hal_tim.o: ../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_tim.c
 	${MKDIR} -p ${OBJECTDIR}/_ext/3ee57e25
 	${RM} "$@.d"
-	$(COMPILE.c) -g -DSTM32F103xB -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Inc -I. -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/3ee57e25/stm32f1xx_hal_tim.o ../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_tim.c
+	$(COMPILE.c) -g -DSTM32F103xB -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Inc -I. -Idriver/Inc -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/3ee57e25/stm32f1xx_hal_tim.o ../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_tim.c
 
 ${OBJECTDIR}/_ext/3ee57e25/stm32f1xx_hal_tim_ex.o: ../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_tim_ex.c
 	${MKDIR} -p ${OBJECTDIR}/_ext/3ee57e25
 	${RM} "$@.d"
-	$(COMPILE.c) -g -DSTM32F103xB -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Inc -I. -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/3ee57e25/stm32f1xx_hal_tim_ex.o ../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_tim_ex.c
+	$(COMPILE.c) -g -DSTM32F103xB -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Inc -I. -Idriver/Inc -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/3ee57e25/stm32f1xx_hal_tim_ex.o ../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_tim_ex.c
 
 ${OBJECTDIR}/_ext/3ee57e25/stm32f1xx_hal_uart.o: ../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_uart.c
 	${MKDIR} -p ${OBJECTDIR}/_ext/3ee57e25
 	${RM} "$@.d"
-	$(COMPILE.c) -g -DSTM32F103xB -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Inc -I. -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/3ee57e25/stm32f1xx_hal_uart.o ../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_uart.c
+	$(COMPILE.c) -g -DSTM32F103xB -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Inc -I. -Idriver/Inc -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/3ee57e25/stm32f1xx_hal_uart.o ../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_uart.c
 
 ${OBJECTDIR}/_ext/511dc8f5/dma.o: ../Src/dma.c
 	${MKDIR} -p ${OBJECTDIR}/_ext/511dc8f5
 	${RM} "$@.d"
-	$(COMPILE.c) -g -DSTM32F103xB -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Inc -I. -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/511dc8f5/dma.o ../Src/dma.c
+	$(COMPILE.c) -g -DSTM32F103xB -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Inc -I. -Idriver/Inc -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/511dc8f5/dma.o ../Src/dma.c
 
 ${OBJECTDIR}/_ext/511dc8f5/gpio.o: ../Src/gpio.c
 	${MKDIR} -p ${OBJECTDIR}/_ext/511dc8f5
 	${RM} "$@.d"
-	$(COMPILE.c) -g -DSTM32F103xB -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Inc -I. -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/511dc8f5/gpio.o ../Src/gpio.c
+	$(COMPILE.c) -g -DSTM32F103xB -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Inc -I. -Idriver/Inc -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/511dc8f5/gpio.o ../Src/gpio.c
 
 ${OBJECTDIR}/_ext/511dc8f5/main.o: ../Src/main.c
 	${MKDIR} -p ${OBJECTDIR}/_ext/511dc8f5
 	${RM} "$@.d"
-	$(COMPILE.c) -g -DSTM32F103xB -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Inc -I. -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/511dc8f5/main.o ../Src/main.c
+	$(COMPILE.c) -g -DSTM32F103xB -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Inc -I. -Idriver/Inc -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/511dc8f5/main.o ../Src/main.c
 
 ${OBJECTDIR}/_ext/511dc8f5/stm32f1xx_hal_msp.o: ../Src/stm32f1xx_hal_msp.c
 	${MKDIR} -p ${OBJECTDIR}/_ext/511dc8f5
 	${RM} "$@.d"
-	$(COMPILE.c) -g -DSTM32F103xB -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Inc -I. -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/511dc8f5/stm32f1xx_hal_msp.o ../Src/stm32f1xx_hal_msp.c
+	$(COMPILE.c) -g -DSTM32F103xB -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Inc -I. -Idriver/Inc -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/511dc8f5/stm32f1xx_hal_msp.o ../Src/stm32f1xx_hal_msp.c
 
 ${OBJECTDIR}/_ext/511dc8f5/stm32f1xx_it.o: ../Src/stm32f1xx_it.c
 	${MKDIR} -p ${OBJECTDIR}/_ext/511dc8f5
 	${RM} "$@.d"
-	$(COMPILE.c) -g -DSTM32F103xB -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Inc -I. -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/511dc8f5/stm32f1xx_it.o ../Src/stm32f1xx_it.c
+	$(COMPILE.c) -g -DSTM32F103xB -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Inc -I. -Idriver/Inc -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/511dc8f5/stm32f1xx_it.o ../Src/stm32f1xx_it.c
 
 ${OBJECTDIR}/_ext/511dc8f5/system_stm32f1xx.o: ../Src/system_stm32f1xx.c
 	${MKDIR} -p ${OBJECTDIR}/_ext/511dc8f5
 	${RM} "$@.d"
-	$(COMPILE.c) -g -DSTM32F103xB -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Inc -I. -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/511dc8f5/system_stm32f1xx.o ../Src/system_stm32f1xx.c
+	$(COMPILE.c) -g -DSTM32F103xB -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Inc -I. -Idriver/Inc -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/511dc8f5/system_stm32f1xx.o ../Src/system_stm32f1xx.c
 
 ${OBJECTDIR}/_ext/511dc8f5/tim.o: ../Src/tim.c
 	${MKDIR} -p ${OBJECTDIR}/_ext/511dc8f5
 	${RM} "$@.d"
-	$(COMPILE.c) -g -DSTM32F103xB -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Inc -I. -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/511dc8f5/tim.o ../Src/tim.c
+	$(COMPILE.c) -g -DSTM32F103xB -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Inc -I. -Idriver/Inc -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/511dc8f5/tim.o ../Src/tim.c
 
 ${OBJECTDIR}/_ext/511dc8f5/usart.o: ../Src/usart.c
 	${MKDIR} -p ${OBJECTDIR}/_ext/511dc8f5
 	${RM} "$@.d"
-	$(COMPILE.c) -g -DSTM32F103xB -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Inc -I. -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/511dc8f5/usart.o ../Src/usart.c
+	$(COMPILE.c) -g -DSTM32F103xB -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Inc -I. -Idriver/Inc -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/511dc8f5/usart.o ../Src/usart.c
 
 ${OBJECTDIR}/_ext/2ac0c52e/startup_stm32f103xb.o: ../startup/startup_stm32f103xb.s
 	${MKDIR} -p ${OBJECTDIR}/_ext/2ac0c52e
@@ -197,12 +201,32 @@ ${OBJECTDIR}/_ext/2ac0c52e/startup_stm32f103xb.o: ../startup/startup_stm32f103xb
 ${OBJECTDIR}/crc.o: crc.c
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.c) -g -DSTM32F103xB -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Inc -I. -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/crc.o crc.c
+	$(COMPILE.c) -g -DSTM32F103xB -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Inc -I. -Idriver/Inc -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/crc.o crc.c
+
+${OBJECTDIR}/driver/Src/CRC16ANSI.o: driver/Src/CRC16ANSI.c
+	${MKDIR} -p ${OBJECTDIR}/driver/Src
+	${RM} "$@.d"
+	$(COMPILE.c) -g -DSTM32F103xB -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Inc -I. -Idriver/Inc -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/driver/Src/CRC16ANSI.o driver/Src/CRC16ANSI.c
+
+${OBJECTDIR}/driver/Src/MakeMODICON.o: driver/Src/MakeMODICON.c
+	${MKDIR} -p ${OBJECTDIR}/driver/Src
+	${RM} "$@.d"
+	$(COMPILE.c) -g -DSTM32F103xB -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Inc -I. -Idriver/Inc -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/driver/Src/MakeMODICON.o driver/Src/MakeMODICON.c
+
+${OBJECTDIR}/driver/Src/parserMODICON.o: driver/Src/parserMODICON.c
+	${MKDIR} -p ${OBJECTDIR}/driver/Src
+	${RM} "$@.d"
+	$(COMPILE.c) -g -DSTM32F103xB -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Inc -I. -Idriver/Inc -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/driver/Src/parserMODICON.o driver/Src/parserMODICON.c
+
+${OBJECTDIR}/driver/Src/slaveMODBUStrasact.o: driver/Src/slaveMODBUStrasact.c
+	${MKDIR} -p ${OBJECTDIR}/driver/Src
+	${RM} "$@.d"
+	$(COMPILE.c) -g -DSTM32F103xB -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Inc -I. -Idriver/Inc -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/driver/Src/slaveMODBUStrasact.o driver/Src/slaveMODBUStrasact.c
 
 ${OBJECTDIR}/transer.o: transer.c
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.c) -g -DSTM32F103xB -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Inc -I. -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/transer.o transer.c
+	$(COMPILE.c) -g -DSTM32F103xB -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Inc -I. -Idriver/Inc -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/transer.o transer.c
 
 # Subprojects
 .build-subprojects:

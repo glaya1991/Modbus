@@ -18,6 +18,8 @@
                 <sourceRootElem>../Drivers/STM32F1xx_HAL_Driver/Inc</sourceRootElem>
                 <sourceRootElem>../Drivers/CMSIS/Include</sourceRootElem>
                 <sourceRootElem>../Drivers/CMSIS/Device/ST/STM32F1xx/Include</sourceRootElem>
+                <sourceRootElem>driver/Src</sourceRootElem>
+                <sourceRootElem>driver/Inc</sourceRootElem>
             </sourceRootList>
             <confList>
                 <confElem>

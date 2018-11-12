@@ -28,10 +28,11 @@ extern "C" {
 #endif
 
  extern UART_HandleTypeDef huart1;
-    
-uint8_t receiver(void);
-int transmitter(uint8_t byte);
-int transmitter_array(uint8_t *arr, uint16_t size);
+
+void receive_byte(void);
+uint8_t get_received_byte(void);
+int transmit_byte(uint8_t byte);
+int transmit_array(uint8_t *arr, uint16_t size);
 
 
 #ifdef __cplusplus

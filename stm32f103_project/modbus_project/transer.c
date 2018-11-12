@@ -8,7 +8,7 @@
 uint8_t msg_rx_1byte[1];
 #define DELAU_US for(uint32_t i=0;i<50;i=i+2){i--;}
 
-int transmitter_array(uint8_t *arr, uint16_t size)
+int transmit_array(uint8_t *arr, uint16_t size)
 {
     HAL_GPIO_WritePin(USART1_RE_DE_GPIO_Port, USART1_RE_DE_Pin, RS485_TX);
     DELAU_US;
@@ -19,7 +19,7 @@ int transmitter_array(uint8_t *arr, uint16_t size)
     return 0;
 }
 
-int transmitter(uint8_t byte)
+int transmit_byte(uint8_t byte)
 {
     uint8_t buf[1] = {byte};
     HAL_GPIO_WritePin(USART1_RE_DE_GPIO_Port, USART1_RE_DE_Pin, RS485_TX);
@@ -28,7 +28,12 @@ int transmitter(uint8_t byte)
     return 0;
 }
 
-uint8_t receiver(void)
+void receive_byte(void)
+{
+    HAL_UART_Receive_IT(&huart1, msg_rx_1byte, 1);
+}
+
+uint8_t get_received_byte(void)
 {
     //uint8_t buf[1];
     //HAL_UART_Receive(&huart1, &buf, 1, 1000);
