@@ -6,12 +6,14 @@
 
 #include "transfer.h"
 uint8_t msg_rx_1byte[1];
-#define DELAU_US for(uint32_t i=0;i<100;i=i+2){i--;}
+#define DELAU_US for(uint32_t i=0;i<50;i=i+2){i--;}
 
 int transmitter_array(uint8_t *arr, uint16_t size)
 {
     HAL_GPIO_WritePin(USART1_RE_DE_GPIO_Port, USART1_RE_DE_Pin, RS485_TX);
+    DELAU_US;
     HAL_UART_Transmit(&huart1, arr, size, 1000);
+    DELAU_US;
     HAL_GPIO_WritePin(USART1_RE_DE_GPIO_Port, USART1_RE_DE_Pin, RS485_RX);
     
     return 0;

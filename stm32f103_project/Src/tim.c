@@ -46,6 +46,8 @@
 //TIM1: Prescaler = 31999, Period = 7 --> F=250Hz (4ms)
 //TIM1: Prescaler = 4704, Period = 3 --> F=3400Hz (0.33ms) //4 symbols at 115200bit/s
 //TIM1: Prescaler = 2559, Period = 1 --> F=12500Hz (80us)   //round 1 symbol at 115200bit/s 
+//TIM1: Prescaler = 63, Period = 4 --> F=200kHz (5us)   
+//TIM1: Prescaler = 63, Period = 9 --> F=100kHz (10us)  
 /* USER CODE END 0 */
 
 TIM_HandleTypeDef htim1;
@@ -57,9 +59,9 @@ void MX_TIM1_Init(void)
   TIM_MasterConfigTypeDef sMasterConfig;
 
   htim1.Instance = TIM1;
-  htim1.Init.Prescaler = 2559;    //31
+  htim1.Init.Prescaler = 63;
   htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim1.Init.Period = 1;    //1
+  htim1.Init.Period = 9;
   htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim1.Init.RepetitionCounter = 0;
   htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
@@ -95,7 +97,7 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* tim_baseHandle)
     __HAL_RCC_TIM1_CLK_ENABLE();
 
     /* TIM1 interrupt Init */
-    HAL_NVIC_SetPriority(TIM1_UP_IRQn, 1, 0);
+    HAL_NVIC_SetPriority(TIM1_UP_IRQn, 0, 0);
     HAL_NVIC_EnableIRQ(TIM1_UP_IRQn);
   /* USER CODE BEGIN TIM1_MspInit 1 */
 

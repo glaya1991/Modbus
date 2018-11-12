@@ -38,7 +38,7 @@
 /* USER CODE BEGIN 0 */
 #include "transfer.h"
 extern uint8_t u1tx_buf[U1_BUF_SIZE];
-extern uint16_t u1tx_cnt;
+extern uint16_t u1tx_cnt, u1tx_cnt_irq;
 extern uint8_t u1tx_flag;
 
 extern uint8_t u1rx_buf[U1_BUF_SIZE];
@@ -55,6 +55,8 @@ void TIM_ResetCounter(TIM_TypeDef* TIMx);
 
 /* External variables --------------------------------------------------------*/
 extern TIM_HandleTypeDef htim1;
+extern DMA_HandleTypeDef hdma_usart1_tx;
+extern DMA_HandleTypeDef hdma_usart1_rx;
 extern UART_HandleTypeDef huart1;
 
 /******************************************************************************/
@@ -208,24 +210,55 @@ void SysTick_Handler(void)
 /******************************************************************************/
 
 /**
+* @brief This function handles DMA1 channel4 global interrupt.
+*/
+void DMA1_Channel4_IRQHandler(void)
+{
+  /* USER CODE BEGIN DMA1_Channel4_IRQn 0 */
+
+  /* USER CODE END DMA1_Channel4_IRQn 0 */
+  HAL_DMA_IRQHandler(&hdma_usart1_tx);
+  /* USER CODE BEGIN DMA1_Channel4_IRQn 1 */
+
+  /* USER CODE END DMA1_Channel4_IRQn 1 */
+}
+
+/**
+* @brief This function handles DMA1 channel5 global interrupt.
+*/
+void DMA1_Channel5_IRQHandler(void)
+{
+  /* USER CODE BEGIN DMA1_Channel5_IRQn 0 */
+
+  /* USER CODE END DMA1_Channel5_IRQn 0 */
+  HAL_DMA_IRQHandler(&hdma_usart1_rx);
+  /* USER CODE BEGIN DMA1_Channel5_IRQn 1 */
+
+  /* USER CODE END DMA1_Channel5_IRQn 1 */
+}
+
+/**
 * @brief This function handles TIM1 update interrupt.
 */
 void TIM1_UP_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM1_UP_IRQn 0 */
-    
-    HAL_GPIO_TogglePin(LED_G1_GPIO_Port, LED_G1_Pin);
+    // Instance -> CNT = 0 (!)
     htim1_cnt++;
-    if(u1rx_cnt){
-        if(htim1_cnt==htim1_max){
-            flag_tim1 = 1;
-            
-        }
+
+    if(htim1_cnt==htim1_max){
+        if(u1rx_cnt){flag_tim1 = 1;}
     }
     
+    //HAL_GPIO_TogglePin(LED_G1_GPIO_Port, LED_G1_Pin);
+ 
   /* USER CODE END TIM1_UP_IRQn 0 */
   HAL_TIM_IRQHandler(&htim1);
   /* USER CODE BEGIN TIM1_UP_IRQn 1 */
+
+//    if(__HAL_TIM_GET_COUNTER(&htim1)==999){
+//        HAL_GPIO_TogglePin(LED_G1_GPIO_Port, LED_G1_Pin);
+//    }
 
   /* USER CODE END TIM1_UP_IRQn 1 */
 }
@@ -233,23 +266,37 @@ void TIM1_UP_IRQHandler(void)
 /**
 * @brief This function handles USART1 global interrupt.
 */
+uint8_t flag1=0;
 void USART1_IRQHandler(void)
 {
   /* USER CODE BEGIN USART1_IRQn 0 */
-
+    uint8_t i;
   /* USER CODE END USART1_IRQn 0 */
   HAL_UART_IRQHandler(&huart1);
   /* USER CODE BEGIN USART1_IRQn 1 */
+    // TIM:     Tperiod = 5us, 
+    //
+    //          T_1symbol = 85 us (for 115200 bit/s)
+    //          T_3.5symbol = 85*3.5 = 300 us
+    //
+    //          cnt_3.5symbol = T_3.5symbol/Tperiod = 60
   
-     if(u1tx_flag==0){
-        //HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 1);
-        htim1_max = htim1_cnt+4;
+    HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 1);
+    if(u1tx_flag==0)
+    {
+        htim1_max = htim1_cnt+30;
         u1rx_buf[(u1rx_cnt++)%U1_BUF_SIZE] = receiver();
         //if(u1rx_buf[0]!=DEV_ADDR){ u1rx_cnt--;}
-        //HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
     }
+    else
+    {
+        //if(u1tx_cnt_irq==0) 
+        //{u1tx_flag=0; u1rx_cnt = 0; memset(&u1rx_buf, 0, u1tx_cnt); }
+    }
+    
+    HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
   
-  u1rx_flag = 1;
+    u1rx_flag = 1;
   /* USER CODE END USART1_IRQn 1 */
 }
 
@@ -257,17 +304,16 @@ void USART1_IRQHandler(void)
 
 //void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 //{
-//
-//
-//
+//    if(u1tx_flag){
+//    HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 1);
+//        u1tx_cnt_irq--;
+//        htim1_max = htim1_cnt+60;
+//        if(u1tx_cnt_irq==0) {u1tx_flag=0; u1rx_cnt = 0; memset(&u1rx_buf, 0, u1tx_cnt); }
+//    HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
+//    }
 //    return;
 //}
 
-//void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
-//{
-//
-//    return;
-//}
 
 void TIM_ResetCounter(TIM_TypeDef* TIMx)
 {

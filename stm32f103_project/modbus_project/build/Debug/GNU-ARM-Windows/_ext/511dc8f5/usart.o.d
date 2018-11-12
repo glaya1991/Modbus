@@ -21,7 +21,8 @@ build/Debug/GNU-ARM-Windows/_ext/511dc8f5/usart.o: ../Src/usart.c \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h \
- ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h ../Inc/gpio.h
+ ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h ../Inc/gpio.h \
+ ../Inc/dma.h
 
 ../Inc/usart.h:
 
@@ -74,3 +75,5 @@ build/Debug/GNU-ARM-Windows/_ext/511dc8f5/usart.o: ../Src/usart.c \
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h:
 
 ../Inc/gpio.h:
+
+../Inc/dma.h:
