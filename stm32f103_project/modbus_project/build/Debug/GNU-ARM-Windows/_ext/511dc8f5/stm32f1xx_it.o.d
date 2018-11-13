@@ -23,7 +23,8 @@ build/Debug/GNU-ARM-Windows/_ext/511dc8f5/stm32f1xx_it.o: \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h \
- ../Inc/stm32f1xx_it.h transfer.h
+ ../Inc/stm32f1xx_it.h transfer.h \
+ ../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy/stm32_hal_legacy.h
 
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:
 
@@ -76,3 +77,5 @@ build/Debug/GNU-ARM-Windows/_ext/511dc8f5/stm32f1xx_it.o: \
 ../Inc/stm32f1xx_it.h:
 
 transfer.h:
+
+../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy/stm32_hal_legacy.h:

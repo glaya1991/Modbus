@@ -1552,6 +1552,164 @@ HAL_StatusTypeDef HAL_UART_AbortReceive_IT(UART_HandleTypeDef *huart)
   *                the configuration information for the specified UART module.
   * @retval None
   */
+
+/******************************************************************************/
+HAL_StatusTypeDef HAL_UART_TransmitReceive_IT(UART_HandleTypeDef *huart, uint8_t *pTxData, uint8_t *pRxData,  uint16_t Size)
+{
+  if(huart->RxState == HAL_UART_STATE_READY)
+  {
+    if((pTxData == NULL) || (pRxData == NULL) || (Size == 0)) 
+    {
+      return HAL_ERROR;
+    }
+    /* Process Locked */
+    __HAL_LOCK(huart);
+
+    huart->pRxBuffPtr = pRxData;
+    huart->RxXferSize = Size;
+    huart->RxXferCount = Size;
+    huart->pTxBuffPtr = pTxData;
+    huart->TxXferSize = Size;
+    huart->TxXferCount = Size;
+
+    huart->ErrorCode = HAL_UART_ERROR_NONE;
+    huart->RxState = HAL_UART_STATE_BUSY_RX;
+    huart->gState = HAL_UART_STATE_BUSY_TX;
+
+    /* Process Unlocked */
+    __HAL_UNLOCK(huart);
+
+    /* Enable the USART Data Register not empty Interrupt */
+    __HAL_UART_ENABLE_IT(huart, UART_IT_RXNE); 
+
+    /* Enable the USART Parity Error Interrupt */
+    __HAL_UART_ENABLE_IT(huart, UART_IT_PE);
+
+    /* Enable the USART Error Interrupt: (Frame error, noise error, overrun error) */
+    __HAL_UART_ENABLE_IT(huart, UART_IT_ERR);
+
+    /* Enable the USART Transmit Data Register Empty Interrupt */
+    __HAL_UART_ENABLE_IT(huart, UART_IT_TXE);
+
+    return HAL_OK;
+  }
+  else
+  {
+    return HAL_BUSY; 
+  }
+}
+
+
+static HAL_StatusTypeDef UART_TransmitReceive_IT(UART_HandleTypeDef *huart)
+{
+  uint16_t* tmp=0;
+
+  if(huart->RxState == HAL_UART_STATE_BUSY_RX)
+  {
+    if(huart->TxXferCount != 0x00)
+    {
+      if(__HAL_UART_GET_FLAG(huart, UART_FLAG_TXE) != RESET)
+      {
+        if(huart->Init.WordLength == UART_WORDLENGTH_9B)
+        {
+          tmp = (uint16_t*) huart->pTxBuffPtr;
+          WRITE_REG(huart->Instance->DR, (uint16_t)(*tmp & (uint16_t)0x01FF));
+          if(huart->Init.Parity == UART_PARITY_NONE)
+          {
+            huart->pTxBuffPtr += 2;
+          }
+          else
+          {
+            huart->pTxBuffPtr += 1;
+          }
+        } 
+        else
+        {
+          WRITE_REG(huart->Instance->DR, (uint8_t)(*huart->pTxBuffPtr++ & (uint8_t)0x00FF));
+        }
+        huart->TxXferCount--;
+
+        /* Check the latest data transmitted */
+        if(huart->TxXferCount == 0)
+        {
+           __HAL_UART_DISABLE_IT(huart, UART_IT_TXE);
+           
+           huart->gState = HAL_UART_STATE_READY;
+        }
+      }
+    }
+
+    if(huart->RxXferCount != 0x00)
+    {
+      if(__HAL_UART_GET_FLAG(huart, UART_FLAG_RXNE) != RESET)
+      {
+        if(huart->Init.WordLength == UART_WORDLENGTH_9B)
+        {
+          tmp = (uint16_t*) huart->pRxBuffPtr;
+          if(huart->Init.Parity == UART_PARITY_NONE)
+          {
+            *tmp = (uint16_t)(huart->Instance->DR & (uint16_t)0x01FF);
+            huart->pRxBuffPtr += 2;
+          }
+          else
+          {
+            *tmp = (uint16_t)(huart->Instance->DR & (uint16_t)0x00FF);
+            huart->pRxBuffPtr += 1;
+          }
+        } 
+        else
+        {
+          if(huart->Init.Parity == UART_PARITY_NONE)
+          {
+            *huart->pRxBuffPtr++ = (uint8_t)(huart->Instance->DR & (uint8_t)0x00FF);
+          }
+          else
+          {
+            *huart->pRxBuffPtr++ = (uint8_t)(huart->Instance->DR & (uint8_t)0x007F);
+          }
+        }
+        huart->RxXferCount--;
+      }
+    }
+
+    /* Check the latest data received */
+    if(huart->RxXferCount == 0)
+    {
+      __HAL_UART_DISABLE_IT(huart, UART_IT_RXNE);
+
+      /* Disable the USART Parity Error Interrupt */
+      __HAL_UART_DISABLE_IT(huart, UART_IT_PE);
+
+      /* Disable the USART Error Interrupt: (Frame error, noise error, overrun error) */
+      __HAL_UART_DISABLE_IT(huart, UART_IT_ERR);
+
+      huart->RxState = HAL_UART_STATE_READY;
+      
+
+      HAL_UART_TxRxCpltCallback(huart);
+
+      return HAL_OK;
+    }
+
+    return HAL_OK;
+  }
+  else
+  {
+    return HAL_BUSY; 
+  }
+}
+
+
+ __weak void HAL_UART_TxRxCpltCallback(UART_HandleTypeDef *huart)
+ {
+   /* Prevent unused argument(s) compilation warning */
+   UNUSED(huart);
+   /* NOTE: This function Should not be modified, when the callback is needed,
+            the HAL_USART_TxCpltCallback could be implemented in the user file
+    */
+ }
+ 
+/******************************************************************************/
 void HAL_UART_IRQHandler(UART_HandleTypeDef *huart)
 {
    uint32_t isrflags   = READ_REG(huart->Instance->SR);
@@ -1567,7 +1725,15 @@ void HAL_UART_IRQHandler(UART_HandleTypeDef *huart)
     /* UART in mode Receiver -------------------------------------------------*/
     if(((isrflags & USART_SR_RXNE) != RESET) && ((cr1its & USART_CR1_RXNEIE) != RESET))
     {
-      UART_Receive_IT(huart);
+      //UART_Receive_IT(huart);
+      if((huart->RxState == HAL_UART_STATE_BUSY_RX)&&(huart->gState == HAL_UART_STATE_BUSY_TX))
+      {
+         UART_TransmitReceive_IT(huart); 
+      }
+      else
+      {
+         UART_Receive_IT(huart);
+      }        
       return;
     }
   }
@@ -1605,7 +1771,15 @@ void HAL_UART_IRQHandler(UART_HandleTypeDef *huart)
       /* UART in mode Receiver -----------------------------------------------*/
       if(((isrflags & USART_SR_RXNE) != RESET) && ((cr1its & USART_CR1_RXNEIE) != RESET))
       {
-        UART_Receive_IT(huart);
+        //UART_Receive_IT(huart);
+        if((huart->RxState == HAL_UART_STATE_BUSY_RX)&&(huart->gState == HAL_UART_STATE_BUSY_TX))
+        {
+           UART_TransmitReceive_IT(huart); 
+        }
+        else
+        {
+           UART_Receive_IT(huart);
+        } 
       }
 
       /* If Overrun error occurs, or if any error occurs in DMA mode reception,

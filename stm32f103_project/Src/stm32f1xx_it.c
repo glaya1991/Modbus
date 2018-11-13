@@ -37,6 +37,7 @@
 
 /* USER CODE BEGIN 0 */
 #include "transfer.h"
+#include "Legacy/stm32_hal_legacy.h"
 extern uint8_t u1tx_buf[U1_BUF_SIZE];
 extern uint16_t u1tx_cnt, u1tx_cnt_irq;
 extern uint8_t u1tx_flag;
@@ -272,6 +273,7 @@ void USART1_IRQHandler(void)
   /* USER CODE BEGIN USART1_IRQn 0 */
     uint8_t i;
   /* USER CODE END USART1_IRQn 0 */
+   
   HAL_UART_IRQHandler(&huart1);
   /* USER CODE BEGIN USART1_IRQn 1 */
     // TIM:     Tperiod = 5us, 
@@ -286,7 +288,8 @@ void USART1_IRQHandler(void)
     htim1_max = htim1_cnt+30;
     u1rx_buf[(u1rx_cnt++)%U1_BUF_SIZE] = get_received_byte();
     //if(u1rx_buf[0]!=DEV_ADDR){ u1rx_cnt--;}
-
+    
+    u1tx_cnt_irq++;
     HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
   
     u1rx_flag = 1;
