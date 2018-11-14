@@ -129,37 +129,37 @@ int main(void)
   uint8_t res=0;
   
   HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
-  //HAL_UART_Receive_IT(&huart1, msg_rx_1byte, 1);
-  //HAL_TIM_Base_Start_IT(&htim1);
+  HAL_UART_Receive_IT(&huart1, msg_rx_1byte, 1);
+  HAL_TIM_Base_Start_IT(&htim1);
   
   for(i=0; i<10;i++){
       u1tx_buf[i]=0x30+i;
   }
   
       
-  while(1){
-      HAL_GPIO_TogglePin(LED_B1_GPIO_Port, LED_B1_Pin);
-
-      u1tx_cnt_irq = 0;
-      u1rx_cnt = 0;
-      u1tx_flag = 1;
-      HAL_GPIO_WritePin(USART1_RE_DE_GPIO_Port, USART1_RE_DE_Pin, RS485_TX);
-      //res = HAL_UART_TransmitReceive_IT(&huart1, (uint8_t *)u1tx_buf, (uint8_t *)u1rx_buf_echo, 4);
-      __HAL_UART_ENABLE_IT(&huart1, UART_IT_RXNE);
-      HAL_UART_Transmit_IT(&huart1, (uint8_t *)u1tx_buf, 4);
-      while(u1tx_flag);
-      HAL_GPIO_WritePin(USART1_RE_DE_GPIO_Port, USART1_RE_DE_Pin, RS485_RX);
-      
-      u1tx_buf[u1rx_cnt]='\n';
-      memcpy(&u1tx_buf, &u1rx_buf, u1rx_cnt);
-      //u1tx_buf[0] = 0x30 + u1tx_cnt_irq;
-      HAL_GPIO_WritePin(USART1_RE_DE_GPIO_Port, USART1_RE_DE_Pin, RS485_TX);
-      HAL_UART_Transmit(&huart1, (uint8_t *)u1tx_buf, u1rx_cnt+1, 1000);
-      HAL_GPIO_WritePin(USART1_RE_DE_GPIO_Port, USART1_RE_DE_Pin, RS485_RX);
-        
-      
-      HAL_Delay(2000);
-  }
+//  while(1){
+//      HAL_GPIO_TogglePin(LED_B1_GPIO_Port, LED_B1_Pin);
+//
+//      u1tx_cnt_irq = 0;
+//      u1rx_cnt = 0;
+//      u1tx_flag = 1;
+//      HAL_GPIO_WritePin(USART1_RE_DE_GPIO_Port, USART1_RE_DE_Pin, RS485_TX);
+//      //res = HAL_UART_TransmitReceive_IT(&huart1, (uint8_t *)u1tx_buf, (uint8_t *)u1rx_buf_echo, 4);
+//      __HAL_UART_ENABLE_IT(&huart1, UART_IT_RXNE);
+//      HAL_UART_Transmit_IT(&huart1, (uint8_t *)u1tx_buf, 4);
+//      while(u1tx_flag);
+//      HAL_GPIO_WritePin(USART1_RE_DE_GPIO_Port, USART1_RE_DE_Pin, RS485_RX);
+//      
+//      u1tx_buf[u1rx_cnt]='\n';
+//      memcpy(&u1tx_buf, &u1rx_buf, u1rx_cnt);
+//      //u1tx_buf[0] = 0x30 + u1tx_cnt_irq;
+//      HAL_GPIO_WritePin(USART1_RE_DE_GPIO_Port, USART1_RE_DE_Pin, RS485_TX);
+//      HAL_UART_Transmit(&huart1, (uint8_t *)u1tx_buf, u1rx_cnt+1, 1000);
+//      HAL_GPIO_WritePin(USART1_RE_DE_GPIO_Port, USART1_RE_DE_Pin, RS485_RX);
+//        
+//      
+//      HAL_Delay(2000);
+//  }
   
   while (1)
   {
@@ -177,47 +177,48 @@ int main(void)
 
         HAL_UART_AbortReceive_IT(&huart1);
 
+        res = __HAL_UART_GET_FLAG(&huart1, UART_FLAG_RXNE);
+        while(res != 0){
+        HAL_UART_Receive(&huart1, msg_rx_1byte, 1, 100);
+        res = __HAL_UART_GET_FLAG(&huart1, UART_FLAG_RXNE);
+        }
+                
         //copy rx data
         u1tx_cnt = u1rx_cnt;
         u1tx_cnt_irq = 0;
         u1rx_cnt = 0;
         memcpy(&u1tx_buf, &u1rx_buf, u1tx_cnt);
         
-        //HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 1);
-        //HAL_UART_Receive_IT(&huart1, u1rx_buf_echo, u1tx_cnt);
-        //transmit_array((uint8_t *)u1tx_buf, u1tx_cnt);
-        //HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
-        
-        HAL_UART_Receive_IT(&huart1, u1rx_buf_echo, u1tx_cnt);
+        u1tx_flag = 1;
         HAL_GPIO_WritePin(USART1_RE_DE_GPIO_Port, USART1_RE_DE_Pin, RS485_TX);
-        HAL_UART_Transmit_DMA(&huart1, (uint8_t *)u1tx_buf, u1tx_cnt);
-        HAL_Delay(10000);
-        //while(u1tx_cnt_irq);
-        
-        
-        u1tx_buf[0]=0x30+u1tx_cnt_irq;
-        HAL_UART_Receive_IT(&huart1, u1rx_buf_echo, 1);
-        HAL_UART_Transmit_DMA(&huart1, (uint8_t *)u1tx_buf, 1);
-        HAL_Delay(2000);
-        
-        
+        //__HAL_UART_ENABLE_IT(&huart1, UART_IT_RXNE);
+        HAL_UART_Receive_IT(&huart1, u1rx_buf_echo, u1tx_cnt);
+        HAL_UART_Transmit_IT(&huart1, (uint8_t *)u1tx_buf, u1tx_cnt);
+        while(u1tx_flag==1);
+        HAL_Delay(100); 
         HAL_GPIO_WritePin(USART1_RE_DE_GPIO_Port, USART1_RE_DE_Pin, RS485_RX);
+        u1tx_flag = 0;
         
+        HAL_Delay(100);  
         
+//        u1rx_buf_echo[0]+=2; 
+//        u1rx_buf_echo[1]+=2;
+//        HAL_GPIO_WritePin(USART1_RE_DE_GPIO_Port, USART1_RE_DE_Pin, RS485_TX);
+//        HAL_UART_Transmit(&huart1, (uint8_t *)u1rx_buf_echo, u1tx_cnt, 1000);
+//        HAL_GPIO_WritePin(USART1_RE_DE_GPIO_Port, USART1_RE_DE_Pin, RS485_RX);
         
-        //clear stm32_rx_buffer  
         res = __HAL_UART_GET_FLAG(&huart1, UART_FLAG_RXNE);
         while(res != 0){
         HAL_UART_Receive(&huart1, msg_rx_1byte, 1, 100);
         res = __HAL_UART_GET_FLAG(&huart1, UART_FLAG_RXNE);
         }
-               
-        
+                
         //clear rx_buffer and counter
         memset(&u1rx_buf, 0, u1tx_cnt); 
         u1rx_cnt = 0;
         flag_tim1 =0;
-        //u1rx_flag = 1; 
+        u1rx_flag = 1; 
+        
     }
                  
     if(u1rx_flag)

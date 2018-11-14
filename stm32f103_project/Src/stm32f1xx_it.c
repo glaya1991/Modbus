@@ -280,26 +280,28 @@ void USART1_IRQHandler(void)
     //          T_3.5symbol = 85*3.5 = 300 us
     //
     //          cnt_3.5symbol = T_3.5symbol/Tperiod = 60
-    
-  if(__HAL_UART_GET_FLAG(&huart1, UART_FLAG_RXNE)){
-      //HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 1);
-      u1rx_buf[(u1rx_cnt++)] = huart1.Instance->DR;
-      __HAL_UART_ENABLE_IT(&huart1, UART_IT_RXNE);
-  }
-  u1tx_cnt_irq++;
   
+  if(u1tx_flag){  
+    if(__HAL_UART_GET_FLAG(&huart1, UART_FLAG_RXNE)){
+        HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 1);
+        u1rx_buf[(u1rx_cnt)] = u1rx_buf_echo[u1rx_cnt++];
+        //__HAL_UART_ENABLE_IT(&huart1, UART_IT_RXNE);
+    }
+  }else{
+    HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 1);
+    u1rx_buf[(u1rx_cnt++)%U1_BUF_SIZE] = get_received_byte(); 
+  }
+
+  htim1_max = htim1_cnt+30;
+  u1rx_flag = 1;
+  HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0); 
   /* USER CODE END USART1_IRQn 0 */
       
   HAL_UART_IRQHandler(&huart1);
   /* USER CODE BEGIN USART1_IRQn 1 */
 
-    htim1_max = htim1_cnt+30;
-    //u1rx_buf[(u1rx_cnt++)%U1_BUF_SIZE] = get_received_byte();
-    //if(u1rx_buf[0]!=DEV_ADDR){ u1rx_cnt--;}
-    
-    //HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
   
-    u1rx_flag = 1;
+   
   /* USER CODE END USART1_IRQn 1 */
 }
 
@@ -309,10 +311,10 @@ void USART1_IRQHandler(void)
 
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 {
-    if(huart->Instance = USART1){
-        HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 1);
-        u1tx_flag = 0;
-        HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
+    if(huart->Instance == USART1){
+        //HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 1);
+        u1tx_flag = 2;
+        //HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
     }
 
     return;
