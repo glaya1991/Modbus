@@ -14,6 +14,7 @@
             <file>file:/D:/project/Modbus/stm32f103_project/Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_def.h</file>
             <file>file:/D:/project/Modbus/stm32f103_project/modbus_project/driver/Src/parserMODICON.c</file>
             <file>file:/D:/project/Modbus/stm32f103_project/modbus_project/transer.c</file>
+            <file>file:/D:/project/Modbus/stm32f103_project/Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h</file>
             <file>file:/D:/project/Modbus/stm32f103_project/Src/stm32f1xx_it.c</file>
         </group>
     </open-files>

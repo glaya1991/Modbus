@@ -662,7 +662,7 @@ void HAL_UART_AbortTransmitCpltCallback (UART_HandleTypeDef *huart);
 void HAL_UART_AbortReceiveCpltCallback (UART_HandleTypeDef *huart);
 
 void HAL_UART_TxRxCpltCallback(UART_HandleTypeDef *huart);
-HAL_StatusTypeDef HAL_UART_TransmitReceive_IT(UART_HandleTypeDef *huart, uint8_t *pTxData, uint8_t *pRxData, uint16_t Size);
+//HAL_StatusTypeDef HAL_UART_TransmitReceive_IT(UART_HandleTypeDef *huart, uint8_t *pTxData, uint8_t *pRxData, uint16_t Size);
 /**
   * @}
   */

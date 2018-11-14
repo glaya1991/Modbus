@@ -273,28 +273,28 @@ extern uint8_t u1rx_buf_echo[U1_BUF_SIZE<<2];
 void USART1_IRQHandler(void)
 {
   /* USER CODE BEGIN USART1_IRQn 0 */
-    uint8_t i;
-  /* USER CODE END USART1_IRQn 0 */
-   
-  //if((__HAL_UART_GET_FLAG(&huart1, UART_FLAG_RXNE))&&(__HAL_UART_GET_FLAG(&huart1, UART_FLAG_RXNE))){
-  //      HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 1);  
-  //}
-    u1tx_cnt_irq++;
-        
-  HAL_UART_IRQHandler(&huart1);
-  /* USER CODE BEGIN USART1_IRQn 1 */
+    
     // TIM:     Tperiod = 5us, 
     //
     //          T_1symbol = 85 us (for 115200 bit/s)
     //          T_3.5symbol = 85*3.5 = 300 us
     //
     //          cnt_3.5symbol = T_3.5symbol/Tperiod = 60
+    
+  if(__HAL_UART_GET_FLAG(&huart1, UART_FLAG_RXNE)){
+      //HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 1);
+      u1rx_buf[(u1rx_cnt++)] = huart1.Instance->DR;
+      __HAL_UART_ENABLE_IT(&huart1, UART_IT_RXNE);
+  }
+  u1tx_cnt_irq++;
   
-
+  /* USER CODE END USART1_IRQn 0 */
+      
+  HAL_UART_IRQHandler(&huart1);
+  /* USER CODE BEGIN USART1_IRQn 1 */
 
     htim1_max = htim1_cnt+30;
     //u1rx_buf[(u1rx_cnt++)%U1_BUF_SIZE] = get_received_byte();
-    u1rx_buf[(u1rx_cnt)] = u1rx_cnt++; //u1rx_buf_echo[(u1rx_cnt++)%U1_BUF_SIZE];
     //if(u1rx_buf[0]!=DEV_ADDR){ u1rx_cnt--;}
     
     //HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
@@ -305,17 +305,18 @@ void USART1_IRQHandler(void)
 
 /* USER CODE BEGIN 1 */
 
-//void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
-//{
-//    if(u1tx_flag){
-//    HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 1);
-//        u1tx_cnt_irq--;
-//        htim1_max = htim1_cnt+60;
-//        if(u1tx_cnt_irq==0) {u1tx_flag=0; u1rx_cnt = 0; memset(&u1rx_buf, 0, u1tx_cnt); }
-//    HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
-//    }
-//    return;
-//}
+
+
+void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
+{
+    if(huart->Instance = USART1){
+        HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 1);
+        u1tx_flag = 0;
+        HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
+    }
+
+    return;
+}
 
 
 void TIM_ResetCounter(TIM_TypeDef* TIMx)
