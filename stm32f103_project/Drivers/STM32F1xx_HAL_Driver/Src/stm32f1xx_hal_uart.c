@@ -1604,23 +1604,24 @@ static HAL_StatusTypeDef UART_TransmitReceive_IT(UART_HandleTypeDef *huart)
 {
   uint16_t* tmp=0;
 
-  if(huart->RxState == HAL_UART_STATE_BUSY_RX)
+  if((huart->gState == HAL_UART_STATE_BUSY_TX)&&(huart->RxState == HAL_UART_STATE_BUSY_RX))
   {
     if(huart->TxXferCount != 0x00)
     {
-      if(__HAL_UART_GET_FLAG(huart, UART_FLAG_TXE) != RESET)
+      if((__HAL_UART_GET_FLAG(huart, UART_FLAG_TXE) != RESET)&&(__HAL_UART_GET_FLAG(huart, UART_FLAG_RXNE) == RESET))
       {
+        HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 1);   
         if(huart->Init.WordLength == UART_WORDLENGTH_9B)
         {
           tmp = (uint16_t*) huart->pTxBuffPtr;
           WRITE_REG(huart->Instance->DR, (uint16_t)(*tmp & (uint16_t)0x01FF));
           if(huart->Init.Parity == UART_PARITY_NONE)
           {
-            huart->pTxBuffPtr += 2;
+            huart->pTxBuffPtr += 2U;
           }
           else
           {
-            huart->pTxBuffPtr += 1;
+            huart->pTxBuffPtr += 1U;
           }
         } 
         else
@@ -1630,15 +1631,21 @@ static HAL_StatusTypeDef UART_TransmitReceive_IT(UART_HandleTypeDef *huart)
         huart->TxXferCount--;
 
         /* Check the latest data transmitted */
-        if(huart->TxXferCount == 0)
+        if(huart->TxXferCount == 0U)
         {
+          /* Disable the UART Transmit Complete Interrupt */
            __HAL_UART_DISABLE_IT(huart, UART_IT_TXE);
            
-           huart->gState = HAL_UART_STATE_READY;
+          /* Enable the UART Transmit Complete Interrupt */    
+           //__HAL_UART_ENABLE_IT(huart, UART_IT_TC);
         }
+        
+        //return HAL_OK;
       }
+      HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0); 
     }
 
+    
     if(huart->RxXferCount != 0x00)
     {
       if(__HAL_UART_GET_FLAG(huart, UART_FLAG_RXNE) != RESET)
@@ -1684,6 +1691,7 @@ static HAL_StatusTypeDef UART_TransmitReceive_IT(UART_HandleTypeDef *huart)
       __HAL_UART_DISABLE_IT(huart, UART_IT_ERR);
 
       huart->RxState = HAL_UART_STATE_READY;
+      huart->gState = HAL_UART_STATE_READY;
       
 
       HAL_UART_TxRxCpltCallback(huart);
@@ -1729,6 +1737,7 @@ void HAL_UART_IRQHandler(UART_HandleTypeDef *huart)
       if((huart->RxState == HAL_UART_STATE_BUSY_RX)&&(huart->gState == HAL_UART_STATE_BUSY_TX))
       {
          UART_TransmitReceive_IT(huart); 
+         
       }
       else
       {
@@ -1737,6 +1746,29 @@ void HAL_UART_IRQHandler(UART_HandleTypeDef *huart)
       return;
     }
   }
+  
+  isrflags   = READ_REG(huart->Instance->SR);
+  cr1its     = READ_REG(huart->Instance->CR1);
+  cr3its     = READ_REG(huart->Instance->CR3);
+  if(errorflags == RESET)
+  {
+    /* UART in mode Transmitter ------------------------------------------------*/
+  if(((isrflags & USART_SR_TXE) != RESET) && ((cr1its & USART_CR1_TXEIE) != RESET))
+  {
+      //UART_Transmit_IT(huart);
+    if((huart->RxState == HAL_UART_STATE_BUSY_RX)&&(huart->gState == HAL_UART_STATE_BUSY_TX))
+      {
+         UART_TransmitReceive_IT(huart); 
+      }
+      else
+      {
+         UART_Transmit_IT(huart);
+     } 
+    
+    return;
+  }
+  }
+
 
   /* If some errors occur */
   if((errorflags != RESET) && (((cr3its & USART_CR3_EIE) != RESET) || ((cr1its & (USART_CR1_RXNEIE | USART_CR1_PEIE)) != RESET)))
@@ -1768,19 +1800,19 @@ void HAL_UART_IRQHandler(UART_HandleTypeDef *huart)
     /* Call UART Error Call back function if need be --------------------------*/
     if(huart->ErrorCode != HAL_UART_ERROR_NONE)
     {
-      /* UART in mode Receiver -----------------------------------------------*/
-      if(((isrflags & USART_SR_RXNE) != RESET) && ((cr1its & USART_CR1_RXNEIE) != RESET))
-      {
-        //UART_Receive_IT(huart);
-        if((huart->RxState == HAL_UART_STATE_BUSY_RX)&&(huart->gState == HAL_UART_STATE_BUSY_TX))
-        {
-           UART_TransmitReceive_IT(huart); 
-        }
-        else
-        {
-           UART_Receive_IT(huart);
-        } 
-      }
+//      /* UART in mode Receiver -----------------------------------------------*/
+//      if(((isrflags & USART_SR_RXNE) != RESET) && ((cr1its & USART_CR1_RXNEIE) != RESET))
+//      {
+//        //UART_Receive_IT(huart);
+//        if((huart->RxState == HAL_UART_STATE_BUSY_RX)&&(huart->gState == HAL_UART_STATE_BUSY_TX))
+//        {
+//           UART_TransmitReceive_IT(huart); 
+//        }
+//        else
+//        {
+//           UART_Receive_IT(huart);
+//        } 
+//      }
 
       /* If Overrun error occurs, or if any error occurs in DMA mode reception,
          consider error as blocking */
@@ -1832,12 +1864,7 @@ void HAL_UART_IRQHandler(UART_HandleTypeDef *huart)
     return;
   } /* End if some error occurs */
 
-  /* UART in mode Transmitter ------------------------------------------------*/
-  if(((isrflags & USART_SR_TXE) != RESET) && ((cr1its & USART_CR1_TXEIE) != RESET))
-  {
-    UART_Transmit_IT(huart);
-    return;
-  }
+  
   
   /* UART in mode Transmitter end --------------------------------------------*/
   if(((isrflags & USART_SR_TC) != RESET) && ((cr1its & USART_CR1_TCIE) != RESET))

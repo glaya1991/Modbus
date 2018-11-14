@@ -268,12 +268,19 @@ void TIM1_UP_IRQHandler(void)
 * @brief This function handles USART1 global interrupt.
 */
 
+extern uint8_t u1rx_buf_echo[U1_BUF_SIZE<<2];
+    
 void USART1_IRQHandler(void)
 {
   /* USER CODE BEGIN USART1_IRQn 0 */
     uint8_t i;
   /* USER CODE END USART1_IRQn 0 */
    
+  //if((__HAL_UART_GET_FLAG(&huart1, UART_FLAG_RXNE))&&(__HAL_UART_GET_FLAG(&huart1, UART_FLAG_RXNE))){
+  //      HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 1);  
+  //}
+    u1tx_cnt_irq++;
+        
   HAL_UART_IRQHandler(&huart1);
   /* USER CODE BEGIN USART1_IRQn 1 */
     // TIM:     Tperiod = 5us, 
@@ -283,14 +290,14 @@ void USART1_IRQHandler(void)
     //
     //          cnt_3.5symbol = T_3.5symbol/Tperiod = 60
   
-    HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 1);
+
 
     htim1_max = htim1_cnt+30;
-    u1rx_buf[(u1rx_cnt++)%U1_BUF_SIZE] = get_received_byte();
+    //u1rx_buf[(u1rx_cnt++)%U1_BUF_SIZE] = get_received_byte();
+    u1rx_buf[(u1rx_cnt)] = u1rx_cnt++; //u1rx_buf_echo[(u1rx_cnt++)%U1_BUF_SIZE];
     //if(u1rx_buf[0]!=DEV_ADDR){ u1rx_cnt--;}
     
-    u1tx_cnt_irq++;
-    HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
+    //HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
   
     u1rx_flag = 1;
   /* USER CODE END USART1_IRQn 1 */
