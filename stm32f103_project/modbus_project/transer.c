@@ -5,40 +5,36 @@
  */
 
 #include "transfer.h"
-uint8_t msg_rx_1byte[1];
+
+//uint8_t u1rx_buf_1byte[1];
+uint8_t u1rx_buf_[U1_BUF_SIZE];
+uint16_t u1rx_size_ = 0;
+uint16_t u1rx_cnt_ = 0;
+
 #define DELAU_US for(uint32_t i=0;i<50;i=i+2){i--;}
 
-int transmit_array(uint8_t *arr, uint16_t size)
+int transmit_IT(uint8_t *arr, uint16_t size)
 {
-    HAL_GPIO_WritePin(USART1_RE_DE_GPIO_Port, USART1_RE_DE_Pin, RS485_TX);
-    DELAU_US;
-    HAL_UART_Transmit(&huart1, arr, size, 1000);
-    DELAU_US;
-    HAL_GPIO_WritePin(USART1_RE_DE_GPIO_Port, USART1_RE_DE_Pin, RS485_RX);
+    HAL_UART_Transmit_IT(HUART, arr, size);
     
     return 0;
 }
 
-int transmit_byte(uint8_t byte)
+void receive_IT(uint16_t size)
 {
-    uint8_t buf[1] = {byte};
-    HAL_GPIO_WritePin(USART1_RE_DE_GPIO_Port, USART1_RE_DE_Pin, RS485_TX);
-    HAL_UART_Transmit(&huart1, &buf, 1, 100);
-    HAL_GPIO_WritePin(USART1_RE_DE_GPIO_Port, USART1_RE_DE_Pin, RS485_RX);
-    return 0;
-}
-
-void receive_byte(void)
-{
-    HAL_UART_Receive_IT(&huart1, msg_rx_1byte, 1);
+    u1rx_size_ = size;
+    u1rx_cnt_ = 0;
+    HAL_UART_Receive_IT(HUART, u1rx_buf_, u1rx_size_);
 }
 
 uint8_t get_received_byte(void)
 {
-    //uint8_t buf[1];
-    //HAL_UART_Receive(&huart1, &buf, 1, 1000);
-    
-    uint8_t byte = msg_rx_1byte[0];
-    
+    uint8_t byte = u1rx_buf_[(u1rx_cnt_++)];
     return byte;
+}
+
+int abort_receiveIT(void)
+{
+    HAL_UART_AbortReceive_IT(HUART);
+    return 0;
 }

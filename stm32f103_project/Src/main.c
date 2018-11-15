@@ -53,7 +53,7 @@
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
-uint8_t u1tx_buf[U1_BUF_SIZE<<2];
+uint8_t u1tx_buf[U1_BUF_SIZE];
 uint16_t u1tx_cnt, u1tx_cnt_irq;
 uint8_t u1tx_flag=0;
 
@@ -61,9 +61,8 @@ uint8_t u1rx_buf[U1_BUF_SIZE];
 uint16_t u1rx_cnt;
 uint8_t u1rx_flag=0;
 
-uint8_t u1rx_buf_echo[U1_BUF_SIZE]={0};
-
-extern uint8_t msg_rx_1byte[1];
+//extern uint8_t u1rx_buf_[U1_BUF_SIZE]={0};
+//extern uint8_t u1rx_buf_1byte[1];
 
 extern uint8_t flag_tim1;
 uint32_t t0=0, t1=0, tcase=0;
@@ -125,17 +124,18 @@ int main(void)
 //  uint8_t strTest[10] = "TEST103\r\n";
 //  uint8_t strSize = strlen(strTest);
 //  uint8_t test_cnt=0;
-  uint8_t i;
+  uint8_t i=0,j=0;
   uint8_t res=0;
   
   HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
-  HAL_UART_Receive_IT(&huart1, msg_rx_1byte, 1);
+  //HAL_UART_Receive_IT(&huart1, u1rx_buf_, 1);
+  receive_IT(1);
   HAL_TIM_Base_Start_IT(&htim1);
   
   for(i=0; i<10;i++){
       u1tx_buf[i]=0x30+i;
   }
-  
+  u1tx_flag = 0;
       
 //  while(1){
 //      HAL_GPIO_TogglePin(LED_B1_GPIO_Port, LED_B1_Pin);
@@ -175,41 +175,39 @@ int main(void)
     {
         HAL_GPIO_TogglePin(LED_B1_GPIO_Port, LED_B1_Pin);
 
-        HAL_UART_AbortReceive_IT(&huart1);
+        abort_receiveIT();
 
-        res = __HAL_UART_GET_FLAG(&huart1, UART_FLAG_RXNE);
-        while(res != 0){
-        HAL_UART_Receive(&huart1, msg_rx_1byte, 1, 100);
-        res = __HAL_UART_GET_FLAG(&huart1, UART_FLAG_RXNE);
-        }
                 
-        //copy rx data
+        //copy rx_buffer
         u1tx_cnt = u1rx_cnt;
-        u1tx_cnt_irq = 0;
         u1rx_cnt = 0;
         memcpy(&u1tx_buf, &u1rx_buf, u1tx_cnt);
         
         u1tx_flag = 1;
         HAL_GPIO_WritePin(USART1_RE_DE_GPIO_Port, USART1_RE_DE_Pin, RS485_TX);
-        //__HAL_UART_ENABLE_IT(&huart1, UART_IT_RXNE);
-        HAL_UART_Receive_IT(&huart1, u1rx_buf_echo, u1tx_cnt);
-        HAL_UART_Transmit_IT(&huart1, (uint8_t *)u1tx_buf, u1tx_cnt);
+
+        receive_IT(u1tx_cnt);
+        //HAL_UART_Receive_IT(&huart1, u1rx_buf_, u1tx_cnt);
+        transmit_IT(u1tx_buf, u1tx_cnt);
+        //HAL_UART_Transmit_IT(&huart1, (uint8_t *)u1tx_buf, u1tx_cnt);
         while(u1tx_flag==1);
-        HAL_Delay(100); 
+        HAL_Delay(10); 
         HAL_GPIO_WritePin(USART1_RE_DE_GPIO_Port, USART1_RE_DE_Pin, RS485_RX);
         u1tx_flag = 0;
         
-        HAL_Delay(100);  
+// test echo  
+        for(i=0;i<u1tx_cnt;i++){
+            u1rx_buf[i]+=0x10+j; 
+        }
+        j++;
         
-//        u1rx_buf_echo[0]+=2; 
-//        u1rx_buf_echo[1]+=2;
-//        HAL_GPIO_WritePin(USART1_RE_DE_GPIO_Port, USART1_RE_DE_Pin, RS485_TX);
-//        HAL_UART_Transmit(&huart1, (uint8_t *)u1rx_buf_echo, u1tx_cnt, 1000);
-//        HAL_GPIO_WritePin(USART1_RE_DE_GPIO_Port, USART1_RE_DE_Pin, RS485_RX);
-        
+
+        HAL_GPIO_WritePin(USART1_RE_DE_GPIO_Port, USART1_RE_DE_Pin, RS485_TX);
+        HAL_UART_Transmit(&huart1, u1rx_buf, u1tx_cnt, 1000);
+        HAL_GPIO_WritePin(USART1_RE_DE_GPIO_Port, USART1_RE_DE_Pin, RS485_RX);
         res = __HAL_UART_GET_FLAG(&huart1, UART_FLAG_RXNE);
         while(res != 0){
-        HAL_UART_Receive(&huart1, msg_rx_1byte, 1, 100);
+        HAL_UART_Receive(&huart1, u1rx_buf, 1, 1000);
         res = __HAL_UART_GET_FLAG(&huart1, UART_FLAG_RXNE);
         }
                 
@@ -223,7 +221,8 @@ int main(void)
                  
     if(u1rx_flag)
     {
-      receive_byte();
+        receive_IT(1);
+      //HAL_UART_Receive_IT(&huart1, u1rx_buf_, 1);
       u1rx_flag = 0; 
     }
    

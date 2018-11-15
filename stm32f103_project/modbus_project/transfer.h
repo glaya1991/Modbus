@@ -20,6 +20,7 @@
 #define RS485_TX    1
 #define RS485_RX    0 
 
+#define HUART           &huart1
 #define U1_BUF_SIZE     64
 #define DEV_ADDR        0x12
 
@@ -27,13 +28,13 @@
 extern "C" {
 #endif
 
- extern UART_HandleTypeDef huart1;
+extern UART_HandleTypeDef huart1;
 
-void receive_byte(void);
+int transmit_IT(uint8_t *arr, uint16_t size);
+void receive_IT(uint16_t size);
 uint8_t get_received_byte(void);
-int transmit_byte(uint8_t byte);
-int transmit_array(uint8_t *arr, uint16_t size);
 
+int abort_receiveIT(void);
 
 #ifdef __cplusplus
 }

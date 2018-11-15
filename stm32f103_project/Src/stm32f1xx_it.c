@@ -46,7 +46,8 @@ extern uint8_t u1rx_buf[U1_BUF_SIZE];
 extern uint16_t u1rx_cnt;
 extern uint8_t u1rx_flag;
 
-extern uint8_t msg_rx_1byte[1];
+extern uint8_t u1rx_buf_[U1_BUF_SIZE];
+//extern uint8_t u1rx_buf_1byte[1];
 
 uint8_t flag_tim1=0;
 uint32_t htim1_max = 0, htim1_cnt=0; 
@@ -268,7 +269,6 @@ void TIM1_UP_IRQHandler(void)
 * @brief This function handles USART1 global interrupt.
 */
 
-extern uint8_t u1rx_buf_echo[U1_BUF_SIZE<<2];
     
 void USART1_IRQHandler(void)
 {
@@ -281,26 +281,37 @@ void USART1_IRQHandler(void)
     //
     //          cnt_3.5symbol = T_3.5symbol/Tperiod = 60
   
-  if(u1tx_flag){  
-    if(__HAL_UART_GET_FLAG(&huart1, UART_FLAG_RXNE)){
-        HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 1);
-        u1rx_buf[(u1rx_cnt)] = u1rx_buf_echo[u1rx_cnt++];
-        //__HAL_UART_ENABLE_IT(&huart1, UART_IT_RXNE);
-    }
-  }else{
-    HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 1);
-    u1rx_buf[(u1rx_cnt++)%U1_BUF_SIZE] = get_received_byte(); 
-  }
-
-  htim1_max = htim1_cnt+30;
-  u1rx_flag = 1;
-  HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0); 
+    uint8_t res = __HAL_UART_GET_FLAG(&huart1, UART_FLAG_RXNE);
+     HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 1);  
+  
   /* USER CODE END USART1_IRQn 0 */
       
   HAL_UART_IRQHandler(&huart1);
   /* USER CODE BEGIN USART1_IRQn 1 */
 
+  if(res){
+      u1rx_buf[(u1rx_cnt++)%U1_BUF_SIZE] = get_received_byte(); //u1rx_buf_[0]; 
+  }
   
+  HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
+//  switch(u1tx_flag){
+//      case 1:
+//      case 2:
+//        if(res){
+//        HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
+//        u1rx_buf[(u1rx_cnt++)%U1_BUF_SIZE] = get_received_byte();// u1rx_buf_[u1rx_cnt++];
+//        //__HAL_UART_ENABLE_IT(&huart1, UART_IT_RXNE);
+//        }
+//        break;
+//      case 0:
+//          HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
+//          u1rx_buf[(u1rx_cnt++)%U1_BUF_SIZE] = get_received_byte(); //u1rx_buf_[0]; 
+//          break;
+//  }
+
+  
+  htim1_max = htim1_cnt+30;
+  u1rx_flag = 1;
    
   /* USER CODE END USART1_IRQn 1 */
 }
