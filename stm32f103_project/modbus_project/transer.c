@@ -7,29 +7,29 @@
 #include "transfer.h"
 
 //uint8_t u1rx_buf_1byte[1];
-uint8_t u1rx_buf_[U1_BUF_SIZE];
-uint16_t u1rx_size_ = 0;
-uint16_t u1rx_cnt_ = 0;
+uint8_t UnRxBuf_[UN_BUF_SIZE];
+uint16_t UnRxSize_ = 0;
+uint16_t UnRxCnt_ = 0;
 
 #define DELAU_US for(uint32_t i=0;i<50;i=i+2){i--;}
 
 int transmit_IT(uint8_t *arr, uint16_t size)
 {
     HAL_UART_Transmit_IT(HUART, arr, size);
-    
     return 0;
 }
 
 void receive_IT(uint16_t size)
 {
-    u1rx_size_ = size;
-    u1rx_cnt_ = 0;
-    HAL_UART_Receive_IT(HUART, u1rx_buf_, u1rx_size_);
+    UnRxSize_ = size;
+    UnRxCnt_ = 0;
+    HAL_UART_Receive_IT(HUART, UnRxBuf_, UnRxSize_);
+    return;
 }
 
 uint8_t get_received_byte(void)
 {
-    uint8_t byte = u1rx_buf_[(u1rx_cnt_++)];
+    uint8_t byte = UnRxBuf_[(UnRxCnt_++)];
     return byte;
 }
 

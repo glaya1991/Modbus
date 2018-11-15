@@ -21,8 +21,7 @@
 #define RS485_RX    0 
 
 #define HUART           &huart1
-#define U1_BUF_SIZE     64
-#define DEV_ADDR        0x12
+#define UN_BUF_SIZE     64
 
 #ifdef __cplusplus
 extern "C" {

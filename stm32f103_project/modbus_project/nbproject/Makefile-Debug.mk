@@ -59,7 +59,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/_ext/2ac0c52e/startup_stm32f103xb.o \
 	${OBJECTDIR}/crc.o \
 	${OBJECTDIR}/driver/Src/CRC16ANSI.o \
-	${OBJECTDIR}/driver/Src/MakeMODICON.o \
+	${OBJECTDIR}/driver/Src/handlerModbus.o \
 	${OBJECTDIR}/driver/Src/parserMODICON.o \
 	${OBJECTDIR}/driver/Src/slaveMODBUStrasact.o \
 	${OBJECTDIR}/transer.o
@@ -208,10 +208,10 @@ ${OBJECTDIR}/driver/Src/CRC16ANSI.o: driver/Src/CRC16ANSI.c
 	${RM} "$@.d"
 	$(COMPILE.c) -g -DSTM32F103xB -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Inc -I. -Idriver/Inc -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/driver/Src/CRC16ANSI.o driver/Src/CRC16ANSI.c
 
-${OBJECTDIR}/driver/Src/MakeMODICON.o: driver/Src/MakeMODICON.c
+${OBJECTDIR}/driver/Src/handlerModbus.o: driver/Src/handlerModbus.c
 	${MKDIR} -p ${OBJECTDIR}/driver/Src
 	${RM} "$@.d"
-	$(COMPILE.c) -g -DSTM32F103xB -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Inc -I. -Idriver/Inc -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/driver/Src/MakeMODICON.o driver/Src/MakeMODICON.c
+	$(COMPILE.c) -g -DSTM32F103xB -I../Drivers/CMSIS/Include -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Inc -I. -Idriver/Inc -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/driver/Src/handlerModbus.o driver/Src/handlerModbus.c
 
 ${OBJECTDIR}/driver/Src/parserMODICON.o: driver/Src/parserMODICON.c
 	${MKDIR} -p ${OBJECTDIR}/driver/Src
