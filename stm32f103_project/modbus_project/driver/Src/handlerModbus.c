@@ -60,57 +60,69 @@ void HandlerModbus(void)
     
     switch(modbus_sm){
         case WAIT_QUERY:
+            if (UnRxFlag)
+            {
+                receive_IT(1);
+                //HAL_UART_Receive_IT(&huart1, u1rx_buf_, 1);
+                UnRxFlag = 0;
+            }
+                
             if(flag_tim1)
                 modbus_sm = PARSE_QUERY;
+            
             break;
             
         case PARSE_QUERY:         
-            HAL_GPIO_TogglePin(LED_B1_GPIO_Port, LED_B1_Pin);
-
-            abort_receiveIT();
-
+            HAL_GPIO_TogglePin(LED_B1_GPIO_Port, LED_B1_Pin);           
+            //abort_receiveIT();
+            
             //copy rx_buffer
             UnTxCnt = UnRxCnt;
             UnRxCnt = 0;
             
             memcpy(&UnTxBuf, &UnRxBuf, UnTxCnt);
-            UnRxTxSize = UnTxCnt;
-            MODBUStrasact();
-            UnTxCnt = UnRxTxSize;
+            memset(&UnRxBuf, 0xFF, UnTxCnt);
+            
+            
+            //UnRxTxSize = UnTxCnt;
+            //MODBUStrasact();
+            //UnTxCnt = UnRxTxSize;
             
             modbus_sm = SEND_RESPONSE;
             break;
         
         case SEND_RESPONSE:
+            abort_receiveIT();
             
             UnTxFlag = 1;
             HAL_GPIO_WritePin(USART1_RE_DE_GPIO_Port, USART1_RE_DE_Pin, RS485_TX);
             receive_IT(UnTxCnt);
             transmit_IT(UnTxBuf, UnTxCnt);
+            while(UnTxFlag ==1);
             
             modbus_sm = WAIT_RESPONSE;
             break;
             
         case WAIT_RESPONSE:
             if (UnTxFlag != 1){
-            HAL_Delay(1);
+            HAL_Delay(10);
             HAL_GPIO_WritePin(USART1_RE_DE_GPIO_Port, USART1_RE_DE_Pin, RS485_RX);
             UnTxFlag = 0;
 
             // test echo  
-//                for(i=0;i<UnTxCnt;i++){
-//                    UnRxBuf[i]+=0x10+j; 
-//                }
-//                j++;
-//
-//                HAL_GPIO_WritePin(USART1_RE_DE_GPIO_Port, USART1_RE_DE_Pin, RS485_TX);
-//                HAL_UART_Transmit(&huart1, UnRxBuf, UnTxCnt, 1000);
-//                HAL_GPIO_WritePin(USART1_RE_DE_GPIO_Port, USART1_RE_DE_Pin, RS485_RX);
-//                res = __HAL_UART_GET_FLAG(&huart1, UART_FLAG_RXNE);
-//                while(res != 0){
-//                HAL_UART_Receive(&huart1, UnRxBuf, 1, 1000);
-//                res = __HAL_UART_GET_FLAG(&huart1, UART_FLAG_RXNE);
-//                }
+                for(i=0;i<UnTxCnt;i++){
+                    UnRxBuf[i]+=0x1+j; 
+                }
+                j++;
+
+                HAL_GPIO_WritePin(USART1_RE_DE_GPIO_Port, USART1_RE_DE_Pin, RS485_TX);
+                HAL_UART_Transmit(&huart1, UnRxBuf, UnTxCnt, 1000);
+                HAL_GPIO_WritePin(USART1_RE_DE_GPIO_Port, USART1_RE_DE_Pin, RS485_RX);
+                res = __HAL_UART_GET_FLAG(&huart1, UART_FLAG_RXNE);
+                while(res != 0){
+                HAL_UART_Receive(&huart1, UnRxBuf, 1, 1000);
+                res = __HAL_UART_GET_FLAG(&huart1, UART_FLAG_RXNE);
+                }
 
             //clear rx_buffer and counter
             memset(&UnRxBuf, 0, UnTxCnt);
@@ -127,21 +139,25 @@ void HandlerModbus(void)
             break;
     }
     
-  
-    if ((UnRxFlag)&&(!UnTxFlag))
-    {
-        receive_IT(1);
-        //HAL_UART_Receive_IT(&huart1, u1rx_buf_, 1);
-        UnRxFlag = 0;
-    }
+ 
     
 }
 
-void AddToModbus(void)
+int AddToModbus(void)
 {
-    UnRxBuf[(UnRxCnt++)%UN_BUF_SIZE] = get_received_byte(); //u1rx_buf_[0]; 
+//    uint8_t byte_recv = get_received_byte(); 
+//    uint8_t byte_send = UnTxBuf[UnRxCnt];
+    
+//    if(byte_recv != byte_send){ 
+//        UnRxCnt = 0;
+//        modbus_sm = SEND_RESPONSE;
+//        return -1;
+//    }
+    
+    UnRxBuf[(UnRxCnt++)%UN_BUF_SIZE] = get_received_byte();//byte_recv;
     UnRxFlag = 1;
-    return;
+    
+    return 0;
 }
 
 void endTxModbus(void)
@@ -149,3 +165,4 @@ void endTxModbus(void)
     UnTxFlag = 2;
     return;
 }
+

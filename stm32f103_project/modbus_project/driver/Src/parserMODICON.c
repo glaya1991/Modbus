@@ -89,6 +89,11 @@ U8 parserMODICON( TVar( TPartitionDs8 ) * mailRAC )  {
 
       mailRAC->Size = 2 + 4;
       break;
+      
+      
+     default:   // error handler
+         
+        break;
 
     }
 

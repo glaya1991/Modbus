@@ -29,7 +29,7 @@ void InitModbusDB(void);
 
 
 void HandlerModbus(void);
-void AddToModbus(void);
+int AddToModbus(void);
 void endTxModbus(void);
 
 
