@@ -1,0 +1,58 @@
+typedef struct {
+  TConst( U8 ) * ADR;
+  U8 Size;
+  }  TPartitionCs8;
+
+typedef struct {
+  TConst( U8 ) * ADR;
+  U16 Size;
+  }  TPartitionCs16;
+
+//----------------------
+
+typedef struct {
+  TVar( U8 ) * ADR;
+  U8 Size;
+  }  TPartitionDs8;
+
+typedef struct {
+  TVar( U16 ) * ADR;
+  U16 Size;
+  }  TPartitionU16s16;
+
+typedef struct {
+  TVar( U8 ) * ADR;
+  U16 Size;
+  }  TPartitionDs16;
+
+typedef struct {
+  TVar( U8 ) * ADR;
+  U32 Size;
+  }  TPartitionDs32;
+
+//----------------------
+
+typedef struct {
+  U16 Addr; // physic location
+  U8  Size;            // size
+  }  TEXTPartitionDs16s8;// 16-разрядная партиция с 8-разрядным доступом
+
+//------------------------------
+/*
+
+enum  {	_Partition_o8s8  = 0, 	//  8-разрядное смещение блока в партиции и 8-разрядная длина блока 
+	_Partition_o16s8 = 1, 	// 16-разрядное смещение блока в партиции и 8-разрядная длина блока 
+	_Partition_o32s8 = 2,	// 32-разрядное смещение блока в партиции и 8-разрядная длина блока 
+
+	_Streem_o16s8 = 3, 		// 16-разрядное смещение блока в партиции и 8-разрядная длина блока 
+	_Streem_o32s8 = 4
+
+//	_Streem_o8s8  = 3, 		// 16-разрядное смещение блока в партиции и 8-разрядная длина блока 
+
+// блоки более 255 не поддерживаются:
+//	_Partition_o16s16, 	// 16-разрядное смещение блока в партиции и 16-разрядная длина блок 
+//	_Partition_o32s16,	// 32-разрядное смещение блока в партиции и 16-разрядная длина блок 
+//	_Partition_o32s32,
+
+	};                                                   
+*/
