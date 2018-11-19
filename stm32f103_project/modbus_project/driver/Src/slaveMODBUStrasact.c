@@ -84,6 +84,6 @@ U8 MODBUStrasact( void )  {
   UnRxTxSize = Size;
   //UnSendMessage();
 
-  return 0;
+  return 0;    // return 0; 
   }
 						// ��� ������ ���������

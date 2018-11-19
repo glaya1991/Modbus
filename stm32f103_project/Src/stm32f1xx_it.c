@@ -37,16 +37,17 @@
 
 /* USER CODE BEGIN 0 */
 #include "transfer.h"
+#include "handlerModbus.h"
 #include "Legacy/stm32_hal_legacy.h"
-extern uint8_t u1tx_buf[UN_BUF_SIZE];
-extern uint16_t u1tx_cnt, u1tx_cnt_irq;
-extern uint8_t u1tx_flag;
+extern uint8_t UnTxBuf[UN_BUF_SIZE];
+extern uint16_t UnTxCnt;
+extern uint8_t UnTxFlag;
 
-extern uint8_t u1rx_buf[UN_BUF_SIZE];
-extern uint16_t u1rx_cnt;
-extern uint8_t u1rx_flag;
+extern uint8_t UnRxBuf[UN_BUF_SIZE];
+extern uint16_t UnRxCnt;
+extern uint8_t UnRxFlag;
 
-extern uint8_t u1rx_buf_[UN_BUF_SIZE];
+//extern uint8_t u1rx_buf_[U1_BUF_SIZE];
 //extern uint8_t u1rx_buf_1byte[1];
 
 uint8_t flag_tim1=0;
@@ -249,7 +250,7 @@ void TIM1_UP_IRQHandler(void)
     htim1_cnt++;
 
     if(htim1_cnt==htim1_max){
-        if(u1rx_cnt){flag_tim1 = 1;}
+        if(UnRxCnt){flag_tim1 = 1;}    // can delete (later!!!) "if(UnRxCnt)"
     }
     
     //HAL_GPIO_TogglePin(LED_G1_GPIO_Port, LED_G1_Pin);
@@ -269,7 +270,8 @@ void TIM1_UP_IRQHandler(void)
 * @brief This function handles USART1 global interrupt.
 */
 
-    
+ extern uint8_t UnRxBuf_[UN_BUF_SIZE];   
+ extern uint8_t UnRxCnt_;
 void USART1_IRQHandler(void)
 {
   /* USER CODE BEGIN USART1_IRQn 0 */
@@ -281,47 +283,24 @@ void USART1_IRQHandler(void)
     //
     //          cnt_3.5symbol = T_3.5symbol/Tperiod = 60
   
-    uint32_t isrflags   = READ_REG(huart1.Instance->SR);
-    //uint8_t res = __HAL_UART_GET_FLAG(&huart1, UART_FLAG_RXNE);
-    if((isrflags & USART_SR_RXNE) != RESET)
-    {
-        HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 1);  
-    }
+   //uint8_t res = __HAL_UART_GET_FLAG(&huart1, UART_FLAG_RXNE);
+   //if(res){
+   //     HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 1);  
+   //}
   
   /* USER CODE END USART1_IRQn 0 */
       
   HAL_UART_IRQHandler(&huart1);
   /* USER CODE BEGIN USART1_IRQn 1 */
 
-
-  //if(res)
-//  u1rx_buf[(u1rx_cnt++)%UN_BUF_SIZE] = get_received_byte(); //u1rx_buf_[0];
-//  if((isrflags & USART_SR_RXNE) != RESET)
-//  { 
-//      HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
-//  }
-   
-  switch(u1tx_flag){
-      case 1:
-      case 2:
-        //if(res){
-        HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
-        if(u1tx_cnt_irq--){
-            u1rx_buf[(u1rx_cnt++)%UN_BUF_SIZE] = get_received_byte();// u1rx_buf_[u1rx_cnt++];
-        }
-        //__HAL_UART_ENABLE_IT(&huart1, UART_IT_RXNE);
-        //}
-        break;
-      case 0:
-          HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
-          u1rx_buf[(u1rx_cnt++)%UN_BUF_SIZE] = get_received_byte(); //u1rx_buf_[0]; 
-          break;
-  }
-
+  
+  //if(!res){
+      AddToModbus();
+//      UnRxBuf[(UnRxCnt++)%UN_BUF_SIZE] = UnRxBuf_[UnRxCnt_++]; //get_received_byte(); 
+  //}
   
   htim1_max = htim1_cnt+30;
-  u1rx_flag = 1;
-   
+
   /* USER CODE END USART1_IRQn 1 */
 }
 
@@ -332,8 +311,10 @@ void USART1_IRQHandler(void)
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 {
     if(huart->Instance == USART1){
+        
         //HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 1);
-        u1tx_flag = 2;
+        endTxModbus();
+        //UnTxFlag = 2;
         //HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
     }
 

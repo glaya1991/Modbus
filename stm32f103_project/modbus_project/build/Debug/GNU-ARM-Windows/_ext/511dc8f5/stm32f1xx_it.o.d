@@ -23,7 +23,10 @@ build/Debug/GNU-ARM-Windows/_ext/511dc8f5/stm32f1xx_it.o: \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h \
- ../Inc/stm32f1xx_it.h transfer.h \
+ ../Inc/stm32f1xx_it.h transfer.h driver/Inc/handlerModbus.h \
+ driver/Inc/slaveMODBUStrasact.h driver/Inc/parserMODICON.h \
+ driver/Inc/C.h driver/Inc/bigdigit.h driver/Inc/typeS.h \
+ driver/Inc/partitions.DEF driver/Inc/BLOCKs.DEF \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy/stm32_hal_legacy.h
 
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:
@@ -77,5 +80,21 @@ build/Debug/GNU-ARM-Windows/_ext/511dc8f5/stm32f1xx_it.o: \
 ../Inc/stm32f1xx_it.h:
 
 transfer.h:
+
+driver/Inc/handlerModbus.h:
+
+driver/Inc/slaveMODBUStrasact.h:
+
+driver/Inc/parserMODICON.h:
+
+driver/Inc/C.h:
+
+driver/Inc/bigdigit.h:
+
+driver/Inc/typeS.h:
+
+driver/Inc/partitions.DEF:
+
+driver/Inc/BLOCKs.DEF:
 
 ../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy/stm32_hal_legacy.h:

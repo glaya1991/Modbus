@@ -10,6 +10,7 @@
             <file>file:/D:/project/Modbus/Modbus/stm32f103_project/Src/stm32f1xx_it.c</file>
             <file>file:/D:/project/Modbus/Modbus/stm32f103_project/modbus_project/transer.c</file>
             <file>file:/D:/project/Modbus/Modbus/stm32f103_project/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_uart.c</file>
+            <file>file:/D:/project/Modbus/Modbus/stm32f103_project/modbus_project/driver/Src/handlerModbus.c</file>
             <file>file:/D:/project/Modbus/Modbus/stm32f103_project/Src/usart.c</file>
             <file>file:/D:/project/Modbus/Modbus/stm32f103_project/Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h</file>
             <file>file:/D:/project/Modbus/Modbus/stm32f103_project/Src/main.c</file>

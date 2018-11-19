@@ -47,25 +47,25 @@
 /* USER CODE BEGIN Includes */
 #include "transfer.h"
 #include "string.h"
+#include "handlerModbus.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
-uint8_t u1tx_buf[UN_BUF_SIZE];
-uint16_t u1tx_cnt, u1tx_cnt_irq;
-uint8_t u1tx_flag=0;
-
-uint8_t u1rx_buf[UN_BUF_SIZE];
-uint16_t u1rx_cnt;
-uint8_t u1rx_flag=0;
+//uint8_t u1tx_buf[UN_BUF_SIZE];
+//uint16_t u1tx_cnt, u1tx_cnt_irq;
+//uint8_t u1tx_flag=0;
+//
+//uint8_t u1rx_buf[UN_BUF_SIZE];
+//uint16_t u1rx_cnt;
+//uint8_t u1rx_flag=0;
 
 //extern uint8_t u1rx_buf_[U1_BUF_SIZE]={0};
 //extern uint8_t u1rx_buf_1byte[1];
 
 extern uint8_t flag_tim1;
-uint32_t t0=0, t1=0, tcase=0;
 
 extern uint32_t htim1_cnt, htim1_max;
 extern uint8_t flag1;
@@ -129,14 +129,14 @@ int main(void)
   
   HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
   //HAL_UART_Receive_IT(&huart1, u1rx_buf_, 1);
-  receive_IT(1);
   HAL_TIM_Base_Start_IT(&htim1);
   
-  for(i=0; i<10;i++){
-      u1tx_buf[i]=0x30+i;
-  }
-  u1tx_flag = 0;
-      
+//  for(i=0; i<10;i++){
+//      u1tx_buf[i]=0x30+i;
+//  }
+//  u1tx_flag = 0;
+    
+
 //  while(1){
 //      HAL_GPIO_TogglePin(LED_B1_GPIO_Port, LED_B1_Pin);
 //
@@ -161,6 +161,8 @@ int main(void)
 //      HAL_Delay(2000);
 //  }
   
+  receive_IT(1);
+  InitModbusDB();
   while (1)
   {
 
@@ -171,6 +173,9 @@ int main(void)
  
 
 /*  RS485-TRANSFER              */      
+      
+      HandlerModbus();
+      /*
     if(flag_tim1)
     {
         HAL_GPIO_TogglePin(LED_B1_GPIO_Port, LED_B1_Pin);
@@ -227,6 +232,7 @@ int main(void)
       //HAL_UART_Receive_IT(&huart1, u1rx_buf_, 1);
       u1rx_flag = 0; 
     }
+    */
    
     
   }

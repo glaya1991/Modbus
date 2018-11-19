@@ -21,3 +21,5 @@
 # define  S64	  signed __int64
 
 # define  R64   double
+
+# define  I32	int
