@@ -113,7 +113,7 @@ void HandlerModbus(void)
                 for(i=0;i<UnTxCnt;i++){
                     UnRxBuf[i]+=0x1+j; 
                 }
-                j++;
+                //j++;
 
                 HAL_GPIO_WritePin(USART1_RE_DE_GPIO_Port, USART1_RE_DE_Pin, RS485_TX);
                 HAL_UART_Transmit(&huart1, UnRxBuf, UnTxCnt, 1000);
