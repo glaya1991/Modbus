@@ -17,20 +17,17 @@ uint8_t UnTxBuf[UN_BUF_SIZE]={0};
 uint16_t UnTxCnt=0, UnTxCntIRQ=0;;
 uint8_t UnTxFlag = 0;
 
-uint8_t UnRxBuf[UN_BUF_SIZE]={0};
+uint8_t UnRxBufIT[UN_BUF_SIZE]={0}; //buffer for receiving 1 byte (for unknown size of query)
+uint8_t UnRxBuf[UN_BUF_SIZE]={0}; // buffer for received data
 uint16_t UnRxCnt=0;
 uint8_t UnRxFlag = 0;
 
-uint8_t TempBuf[UN_BUF_SIZE]={0};
 
 uint8_t modbus_sm=0;
 
 //stm32f1xx_it.c
 extern uint8_t flag_tim1;
 //extern uint32_t htim1_cnt, htim1_max;
-
-//extern uint8_t u1rx_buf_[U1_BUF_SIZE]={0};
-//extern uint8_t u1rx_buf_1byte[1];
 
 // slaveMODBUS.c
 TConst( TPartitionDs8 ) UnRxTxBuf = { &UnTxBuf[0], sizeof(UnTxBuf) };
@@ -48,7 +45,15 @@ void InitModbusDB(void)
         MODICON_DB.ADR[i] = (uint16_t)((j<<8)|(j+1));
         j+=2;
     }
-       
+
+    return;
+}
+
+
+void InitModbus(void)
+{
+    receive_IT(UnRxBufIT, 1);
+    UnRxFlag = 0;
     return;
 }
 
@@ -57,15 +62,15 @@ void HandlerModbus(void)
     
     switch(modbus_sm){
         case WAIT_QUERY:
-            if (UnRxFlag)
+            if (UnRxFlag) // wait for 1 byte to receive
             {
-                receive_IT(1);
-                //HAL_UART_Receive_IT(&huart1, u1rx_buf_, 1);
+                // receive by bytes: from extern
+                receive_IT(UnRxBufIT, 1);
                 UnRxFlag = 0;
             }
                 
-            if(flag_tim1){
-                modbus_sm = PARSE_QUERY;
+            if(flag_tim1){ // wait for timeout -- get frame (query)
+               modbus_sm = PARSE_QUERY;
             }
             
             break;
@@ -75,56 +80,54 @@ void HandlerModbus(void)
 
             //copy rx_buffer
             memcpy(&UnTxBuf, &UnRxBuf, UnRxCnt);
+            
+            //parse
             UnRxTxSize = UnRxCnt;
-            if(!MODBUStrasact()){
-                UnTxCnt = UnRxTxSize;
-            }else{
-                UnTxCnt = UnRxCnt;
+            if(MODBUStrasact()){
+                UnRxTxSize = 5; //error case: not finished
             }
 
             UnRxCnt = 0;
-            memset(&UnRxBuf, 0xFF, UnTxCnt);
+            memset(&UnRxBuf, 0xFF, UnRxTxSize);
             modbus_sm = SEND_RESPONSE;
             break;
         
         case SEND_RESPONSE: 
+            // break receiving (1 byte)
             abort_receiveIT();
-            HAL_UART_AbortTransmit(&huart1);
             
-            UnTxCntIRQ = UnTxCnt;
+            // transmit and receive echo
             UnTxFlag = 1;
             HAL_GPIO_WritePin(USART1_RE_DE_GPIO_Port, USART1_RE_DE_Pin, RS485_TX);
-            receive_IT(UnTxCnt);
-            HAL_UART_Transmit_DMA(HUART, UnTxBuf, UnTxCnt);
+            
+            // receive bytes: echo-response
+            receive_IT(UnRxBuf, UnRxTxSize);
+            HAL_UART_Transmit_DMA(HUART, UnTxBuf, UnRxTxSize);
             
             modbus_sm = WAIT_RESPONSE;
             break;
          
             
         case WAIT_RESPONSE:
-            if (UnTxFlag != 1){
-            HAL_Delay(1);
-            //if(flag_tim1){ 
-            HAL_GPIO_WritePin(USART1_RE_DE_GPIO_Port, USART1_RE_DE_Pin, RS485_RX);
+            if (UnTxFlag != 1){   
+            HAL_Delay(1);   // temp delay: add one more case for last symbol
             UnTxFlag = 0;
+            HAL_GPIO_WritePin(USART1_RE_DE_GPIO_Port, USART1_RE_DE_Pin, RS485_RX);
 
-            // test echo  
-                for(i=0;i<2;i++){
-                    UnRxBuf[i]+=0x10+j; 
-                }
-                //j++;
+            // check echo-response (temp) 
+                UnRxBuf[0]+=0x10; 
 
                 HAL_GPIO_WritePin(USART1_RE_DE_GPIO_Port, USART1_RE_DE_Pin, RS485_TX);
-                HAL_UART_Transmit(&huart1, UnRxBuf, UnRxCnt, 1000);
+                HAL_UART_Transmit(&huart1, UnRxBuf, UnRxTxSize, 1000);
                 HAL_GPIO_WritePin(USART1_RE_DE_GPIO_Port, USART1_RE_DE_Pin, RS485_RX);
                 res = __HAL_UART_GET_FLAG(&huart1, UART_FLAG_RXNE);
                 while(res != 0){
-                HAL_UART_Receive(&huart1, UnRxBuf, 1, 1000);
+                HAL_UART_Receive(&huart1, UnRxBuf, 1, 100);
                 res = __HAL_UART_GET_FLAG(&huart1, UART_FLAG_RXNE);
                 }
 
             //clear rx_buffer and counter
-            memset(&UnRxBuf, 0, UnRxCnt);
+            memset(&UnRxBuf, 0, UnRxTxSize);
             UnRxCnt = 0;
             flag_tim1 = 0;
             UnRxFlag = 1;
@@ -137,51 +140,27 @@ void HandlerModbus(void)
         default:
             break;
     }
-    
- 
-    
+       
 }
 
 int AddToModbus(void)
-{
-    uint8_t byte_recv = get_received_byte(); 
-    uint8_t byte_send = UnTxBuf[UnRxCnt];
+{    
+    if(!UnTxFlag){
+        UnRxBuf[(UnRxCnt++)%UN_BUF_SIZE] = UnRxBufIT[0];
+        UnRxFlag = 1;
+    }
       
-//    UnRxBuf[(UnRxCnt++)%UN_BUF_SIZE] = get_received_byte();//byte_recv;
-    
-      switch(UnTxFlag){
-      case 1:
-      case 2:
-        if(UnTxCntIRQ){
-            if(byte_recv != byte_send){ 
-                HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 1);
-                UnRxCnt = 0;
-                modbus_sm = SEND_RESPONSE;
-                HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
-                return -1;
-            }
-
-             UnRxBuf[(UnRxCnt++)%UN_BUF_SIZE] = byte_recv;
-             UnTxCntIRQ--;
-        }
-
-        //u1rx_buf[(u1rx_cnt++)%U1_BUF_SIZE] = get_received_byte();
-        //__HAL_UART_ENABLE_IT(&huart1, UART_IT_RXNE);
-        break;
-        
-      case 0:
-          UnRxBuf[(UnRxCnt++)%UN_BUF_SIZE] = byte_recv;
-          //u1rx_buf[(u1rx_cnt++)%U1_BUF_SIZE] = get_received_byte(); 
-          break;
-      }
-      UnRxFlag = 1;
-    
     return 0;
 }
 
-void endTxModbus(void)
+
+void endRxModbus(void)
 {
-    UnTxFlag = 2;
+    if(UnTxFlag){
+        UnTxFlag = 2;
+    }
     return;
 }
+
+
 

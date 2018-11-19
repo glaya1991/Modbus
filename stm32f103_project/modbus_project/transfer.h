@@ -30,7 +30,7 @@ extern "C" {
 extern UART_HandleTypeDef huart1;
 
 int transmit_IT(uint8_t *arr, uint16_t size);
-void receive_IT(uint16_t size);
+void receive_IT(uint8_t *arr, uint16_t size);
 uint8_t get_received_byte(void);
 
 int abort_receiveIT(void);

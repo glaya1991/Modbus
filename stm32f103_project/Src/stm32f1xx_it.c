@@ -270,8 +270,6 @@ void TIM1_UP_IRQHandler(void)
 * @brief This function handles USART1 global interrupt.
 */
 
- extern uint8_t UnRxBuf_[UN_BUF_SIZE];   
- extern uint8_t UnRxCnt_;
 void USART1_IRQHandler(void)
 {
   /* USER CODE BEGIN USART1_IRQn 0 */
@@ -282,24 +280,22 @@ void USART1_IRQHandler(void)
     //          T_3.5symbol = 85*3.5 = 300 us
     //
     //          cnt_3.5symbol = T_3.5symbol/Tperiod = 60
-  
-   //uint8_t res = __HAL_UART_GET_FLAG(&huart1, UART_FLAG_RXNE);
-   //if(res){
-   //     HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 1);  
-   //}
-  
+    
+//  uint32_t isrflags   = (READ_REG(huart1.Instance->SR)); 
+//  uint32_t cr1its   = (READ_REG(huart1.Instance->CR1)); 
+//  if(((isrflags & USART_SR_RXNE) != RESET) && ((cr1its & USART_CR1_RXNEIE) != RESET)){
+//      HAL_GPIO_TogglePin(LED_G1_GPIO_Port, LED_G1_Pin);
+//  }
+    
   /* USER CODE END USART1_IRQn 0 */
       
   HAL_UART_IRQHandler(&huart1);
+  
   /* USER CODE BEGIN USART1_IRQn 1 */
 
-  
-  //if(!res){
-      AddToModbus();
-//      UnRxBuf[(UnRxCnt++)%UN_BUF_SIZE] = UnRxBuf_[UnRxCnt_++]; //get_received_byte(); 
-  //}
-  
   htim1_max = htim1_cnt+30;
+  AddToModbus();
+  //HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
 
   /* USER CODE END USART1_IRQn 1 */
 }
@@ -308,19 +304,24 @@ void USART1_IRQHandler(void)
 
 
 
-void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
-{
-    if(huart->Instance == USART1){
-        
-        //HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 1);
-        endTxModbus();
-        //UnTxFlag = 2;
-        //HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
-    }
+//void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
+//{
+//    if(huart->Instance == USART1){
+//        endTxModbus();
+//    }
+//    return;
+//}
 
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+    HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 1);
+    if(huart->Instance == USART1)
+    {
+        endRxModbus();
+        HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
+    }
     return;
 }
-
 
 void TIM_ResetCounter(TIM_TypeDef* TIMx)
 {

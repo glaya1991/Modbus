@@ -27,10 +27,13 @@ extern "C" {
    
 void InitModbusDB(void);
 
-
+void InitModbus(void);
 void HandlerModbus(void);
+void HandlerModbus2(void);
+
 int AddToModbus(void);
 void endTxModbus(void);
+void endRxModbus(void);
 
 
 #ifdef __cplusplus
