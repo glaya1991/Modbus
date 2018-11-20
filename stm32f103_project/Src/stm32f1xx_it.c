@@ -250,7 +250,8 @@ void TIM1_UP_IRQHandler(void)
     htim1_cnt++;
 
     if(htim1_cnt==htim1_max){
-        if(UnRxCnt){flag_tim1 = 1;}    // can delete (later!!!) "if(UnRxCnt)"
+        //if(UnRxCnt){flag_tim1 = 1;}  
+        startParseModbus();
     }
     
     //HAL_GPIO_TogglePin(LED_G1_GPIO_Port, LED_G1_Pin);
@@ -294,7 +295,7 @@ void USART1_IRQHandler(void)
   /* USER CODE BEGIN USART1_IRQn 1 */
 
   htim1_max = htim1_cnt+30;
-  AddToModbus();
+  addToModbus();
   //HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
 
   /* USER CODE END USART1_IRQn 1 */

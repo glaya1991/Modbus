@@ -31,9 +31,10 @@ void InitModbus(void);
 void HandlerModbus(void);
 void HandlerModbus2(void);
 
-int AddToModbus(void);
-void endTxModbus(void);
+void startParseModbus(void);
+int addToModbus(void);
 void endRxModbus(void);
+
 
 
 #ifdef __cplusplus

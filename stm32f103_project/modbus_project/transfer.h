@@ -20,6 +20,9 @@
 #define RS485_TX    1
 #define RS485_RX    0 
 
+#define USARTN_RE_DE_TX    HAL_GPIO_WritePin(USART1_RE_DE_GPIO_Port, USART1_RE_DE_Pin, RS485_TX)
+#define USARTN_RE_DE_RX    HAL_GPIO_WritePin(USART1_RE_DE_GPIO_Port, USART1_RE_DE_Pin, RS485_RX)
+
 #define HUART           &huart1
 #define UN_BUF_SIZE     64
 
