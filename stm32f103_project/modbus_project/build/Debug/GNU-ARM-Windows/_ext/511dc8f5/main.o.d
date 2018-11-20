@@ -21,11 +21,11 @@ build/Debug/GNU-ARM-Windows/_ext/511dc8f5/main.o: ../Src/main.c \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h \
- ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h ../Inc/dma.h \
- ../Inc/tim.h ../Inc/usart.h ../Inc/gpio.h transfer.h \
- driver/Inc/handlerModbus.h driver/Inc/slaveMODBUStrasact.h \
- driver/Inc/parserMODICON.h driver/Inc/C.h driver/Inc/bigdigit.h \
- driver/Inc/typeS.h driver/Inc/partitions.DEF driver/Inc/BLOCKs.DEF
+ ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h ../Inc/tim.h \
+ ../Inc/usart.h ../Inc/gpio.h transfer.h driver/Inc/handlerModbus.h \
+ driver/Inc/slaveMODBUStrasact.h driver/Inc/parserMODICON.h \
+ driver/Inc/C.h driver/Inc/bigdigit.h driver/Inc/typeS.h \
+ driver/Inc/partitions.DEF driver/Inc/BLOCKs.DEF
 
 ../Inc/main.h:
 
@@ -76,8 +76,6 @@ build/Debug/GNU-ARM-Windows/_ext/511dc8f5/main.o: ../Src/main.c \
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h:
 
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h:
-
-../Inc/dma.h:
 
 ../Inc/tim.h:
 

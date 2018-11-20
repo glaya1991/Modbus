@@ -41,7 +41,8 @@ uint8_t gi=0, gj=0, res;  //test
 void InitModbusDB(void)
 {
     uint16_t i=0, j=0x0030;
-    for(i=0; i<(MODICON_DB.Size); i++){
+    uint16_t N=(MODICON_DB.Size>>1);
+    for(i=0; i<N; i++){
         MODICON_DB.ADR[i] = (uint16_t)((j<<8)|(j+1));
         j+=2;
     }

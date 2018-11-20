@@ -24,7 +24,7 @@
 #define USARTN_RE_DE_RX    HAL_GPIO_WritePin(USART1_RE_DE_GPIO_Port, USART1_RE_DE_Pin, RS485_RX)
 
 #define HUART           &huart1
-#define UN_BUF_SIZE     64
+#define UN_BUF_SIZE     128
 
 #ifdef __cplusplus
 extern "C" {

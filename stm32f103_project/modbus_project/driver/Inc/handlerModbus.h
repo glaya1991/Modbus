@@ -29,7 +29,6 @@ void InitModbusDB(void);
 
 void InitModbus(void);
 void HandlerModbus(void);
-void HandlerModbus2(void);
 
 void startParseModbus(void);
 int addToModbus(void);

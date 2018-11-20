@@ -48,7 +48,6 @@ OBJECTFILES= \
 	${OBJECTDIR}/_ext/3ee57e25/stm32f1xx_hal_tim.o \
 	${OBJECTDIR}/_ext/3ee57e25/stm32f1xx_hal_tim_ex.o \
 	${OBJECTDIR}/_ext/3ee57e25/stm32f1xx_hal_uart.o \
-	${OBJECTDIR}/_ext/511dc8f5/dma.o \
 	${OBJECTDIR}/_ext/511dc8f5/gpio.o \
 	${OBJECTDIR}/_ext/511dc8f5/main.o \
 	${OBJECTDIR}/_ext/511dc8f5/stm32f1xx_hal_msp.o \
@@ -153,11 +152,6 @@ ${OBJECTDIR}/_ext/3ee57e25/stm32f1xx_hal_uart.o: ../Drivers/STM32F1xx_HAL_Driver
 	${MKDIR} -p ${OBJECTDIR}/_ext/3ee57e25
 	${RM} "$@.d"
 	$(COMPILE.c) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/3ee57e25/stm32f1xx_hal_uart.o ../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_uart.c
-
-${OBJECTDIR}/_ext/511dc8f5/dma.o: ../Src/dma.c
-	${MKDIR} -p ${OBJECTDIR}/_ext/511dc8f5
-	${RM} "$@.d"
-	$(COMPILE.c) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/511dc8f5/dma.o ../Src/dma.c
 
 ${OBJECTDIR}/_ext/511dc8f5/gpio.o: ../Src/gpio.c
 	${MKDIR} -p ${OBJECTDIR}/_ext/511dc8f5

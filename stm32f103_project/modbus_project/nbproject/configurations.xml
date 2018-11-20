@@ -10,7 +10,6 @@
       </logicalFolder>
       <logicalFolder name="Src" displayName="Src" projectFiles="true">
         <itemPath>driver/Src/CRC16ANSI.c</itemPath>
-        <itemPath>../Src/dma.c</itemPath>
         <itemPath>../Src/gpio.c</itemPath>
         <itemPath>../Src/main.c</itemPath>
         <itemPath>driver/Src/parserMODICON.c</itemPath>
@@ -408,8 +407,6 @@
       </item>
       <item path="../Inc/usart.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="../Src/dma.c" ex="false" tool="0" flavor2="0">
-      </item>
       <item path="../Src/gpio.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="../Src/main.c" ex="false" tool="0" flavor2="0">
@@ -726,8 +723,6 @@
       <item path="../Inc/tim.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../Inc/usart.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="../Src/dma.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="../Src/gpio.c" ex="false" tool="0" flavor2="0">
       </item>
