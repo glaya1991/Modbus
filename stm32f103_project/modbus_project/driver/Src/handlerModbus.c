@@ -81,7 +81,7 @@ void HandlerModbus(void)
             
             //parse
             if(MODBUStrasact()){
-                memcpy(&UnTxBuf, &UnTxErr, 6);
+                //memcpy(&UnTxBuf, &UnTxErr, 6);
                 UnRxTxSize = 6; //error case: not finished
             }
 
