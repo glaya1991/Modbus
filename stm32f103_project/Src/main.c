@@ -113,7 +113,7 @@ int main(void)
   //HAL_TIM_Base_Start(&htim1);
   
   //__HAL_TIM_ENABLE_IT(&htim1, TIM_IT_UPDATE);
-  HAL_TIM_OC_Start(&htim1, TIM_CHANNEL_4);
+  //HAL_TIM_OC_Start(&htim1, TIM_CHANNEL_4);
   
   
 // TEST

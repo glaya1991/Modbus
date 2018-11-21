@@ -245,12 +245,12 @@ void TIM1_CC_IRQHandler(void)
     
     // for TIM_Start_OC_IT()
     
-   //HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 1);
+   HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 1);
   /* USER CODE END TIM1_CC_IRQn 0 */
   HAL_TIM_IRQHandler(&htim1);
   /* USER CODE BEGIN TIM1_CC_IRQn 1 */
 
-   //HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
+   HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
   /* USER CODE END TIM1_CC_IRQn 1 */
 }
 
@@ -282,9 +282,12 @@ void USART1_IRQHandler(void)
   
   if(!htim1_en_irq){
       htim1_en_irq = 1;
-      __HAL_TIM_SET_COUNTER(&htim1, 0);
-      __HAL_TIM_ENABLE_IT(&htim1, TIM_IT_CC4);
-      __HAL_TIM_CLEAR_IT(&htim1, TIM_IT_CC4);
+      // 1)
+//      __HAL_TIM_SET_COUNTER(&htim1, 10);
+//      __HAL_TIM_ENABLE_IT(&htim1, TIM_IT_CC4);
+//      __HAL_TIM_CLEAR_IT(&htim1, TIM_IT_CC4);
+      // 2)
+      HAL_TIM_OC_Start_IT(&htim1, TIM_CHANNEL_4);
   }
   __HAL_TIM_SET_COUNTER(&htim1, 0);
   addToModbus();
@@ -333,11 +336,14 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 // for TIM_OC_Start_IT()
 void HAL_TIM_OC_DelayElapsedCallback(TIM_HandleTypeDef *htim)
 {
-    HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 1);
+    //HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 1);
+    // 1)
+    // __HAL_TIM_DISABLE_IT(&htim1, TIM_IT_CC4);
+    // 2)
+    HAL_TIM_OC_Stop(&htim1, TIM_CHANNEL_4);
     htim1_en_irq = 0;
     startParseModbus();
-    __HAL_TIM_DISABLE_IT(&htim1, TIM_IT_CC4);
-   HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
+   //HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
     return;  
 }
 
