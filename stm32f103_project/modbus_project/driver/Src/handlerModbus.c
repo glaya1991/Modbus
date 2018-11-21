@@ -144,7 +144,7 @@ void HandlerModbus(void)
        
 }
 
-int addToModbus(void)
+int handleRx(void)
 {    
     if(!UnTxFlag){
         UnRxBuf[(UnRxCnt++)%UN_BUF_SIZE] = UnRxBufIT[0];
@@ -154,7 +154,7 @@ int addToModbus(void)
 }
 
 
-void endRxModbus(void)
+void endRx(void)
 {
     if(UnTxFlag){
         UnTxFlag = 2;
@@ -162,7 +162,7 @@ void endRxModbus(void)
     return;
 }
 
-void startParseModbus(void)
+void getFrame(void)
 {
     if(UnRxCnt){
         modbus_sm = PARSE_QUERY;

@@ -260,14 +260,27 @@ void TIM1_CC_IRQHandler(void)
 void USART1_IRQHandler(void)
 {
   /* USER CODE BEGIN USART1_IRQn 0 */
+    //      for 115200 bit/s, symbol = 10bit:
+    //          T_1symbol = 85 us 
+    //          T_3.5symbol = 85*3.5 = 300 us
+    //
+    //      for 115200 bit/s, symbol = 12bit:
+    //          T_1symbol = 104 us 
+    //          T_3.5symbol = 104*3.5 = 365 us
     
+    // 1) -- (need to use htim_cnt, htim_cnt_max, old version)
     // TIM:     Tperiod = 5us, 
     //
     //          T_1symbol = 85 us (for 115200 bit/s)
     //          T_3.5symbol = 85*3.5 = 300 us
-    //
     //          cnt_3.5symbol = T_3.5symbol/Tperiod = 60
-    
+    //
+    // 2) ++
+    // TIM:     Tstep= Prescaler*Tclk = 1us
+    //          Tperiod = 65535 us (0xFFFF) 
+    //          Tpulse = T_3.5symbol = 365 us
+
+     
 //  uint32_t isrflags   = (READ_REG(huart1.Instance->SR)); 
 //  uint32_t cr1its   = (READ_REG(huart1.Instance->CR1)); 
 //  if(((isrflags & USART_SR_RXNE) != RESET) && ((cr1its & USART_CR1_RXNEIE) != RESET)){
@@ -287,10 +300,14 @@ void USART1_IRQHandler(void)
 //      __HAL_TIM_ENABLE_IT(&htim1, TIM_IT_CC4);
 //      __HAL_TIM_CLEAR_IT(&htim1, TIM_IT_CC4);
       // 2)
-      HAL_TIM_OC_Start_IT(&htim1, TIM_CHANNEL_4);
+      HAL_TIM_OC_Start_IT(&htim1, TIM_CHANNEL_1);
   }
+  
+  //uint16_t curCnt = __HAL_TIM_GET_COMPARE(&htim1, TIM_CHANNEL_1);
+  //__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, (uint16_t)(curCnt+365));   
   __HAL_TIM_SET_COUNTER(&htim1, 0);
-  addToModbus();
+  
+  handleRx();
   //HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
 
   /* USER CODE END USART1_IRQn 1 */
@@ -313,7 +330,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
     //HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 1);
     if(huart->Instance == USART1)
     {
-        endRxModbus();
+        endRx();
         //HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
     }
     return;
@@ -340,9 +357,9 @@ void HAL_TIM_OC_DelayElapsedCallback(TIM_HandleTypeDef *htim)
     // 1)
     // __HAL_TIM_DISABLE_IT(&htim1, TIM_IT_CC4);
     // 2)
-    HAL_TIM_OC_Stop(&htim1, TIM_CHANNEL_4);
+    HAL_TIM_OC_Stop_IT(&htim1, TIM_CHANNEL_1);
     htim1_en_irq = 0;
-    startParseModbus();
+    getFrame();
    //HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
     return;  
 }

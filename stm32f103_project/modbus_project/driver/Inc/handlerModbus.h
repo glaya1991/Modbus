@@ -30,9 +30,9 @@ void InitModbusDB(void);
 void InitModbus(void);
 void HandlerModbus(void);
 
-void startParseModbus(void);
-int addToModbus(void);
-void endRxModbus(void);
+void getFrame(void);
+int handleRx(void);
+void endRx(void);
 
 
 
