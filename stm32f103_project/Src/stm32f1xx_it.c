@@ -52,6 +52,7 @@ extern uint8_t UnRxFlag;
 
 uint8_t flag_tim1=0;
 uint32_t htim1_max = 0, htim1_cnt=0; 
+uint32_t htim1_en_irq = 0;
 
 void TIM_ResetCounter(TIM_TypeDef* TIMx);
 /* USER CODE END 0 */
@@ -216,23 +217,20 @@ void SysTick_Handler(void)
 void TIM1_UP_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM1_UP_IRQn 0 */
-    // Instance -> CNT = 0 (!)
-    htim1_cnt++;
 
-    if(htim1_cnt==htim1_max){
-        //if(UnRxCnt){flag_tim1 = 1;}  
-        startParseModbus();
-    }
-    
-    //HAL_GPIO_TogglePin(LED_G1_GPIO_Port, LED_G1_Pin);
+//    htim1_cnt++;
+//    if(htim1_cnt==htim1_max){
+//        startParseModbus();
+//    }
+    HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 1);
+   //HAL_GPIO_TogglePin(LED_G1_GPIO_Port, LED_G1_Pin);
  
   /* USER CODE END TIM1_UP_IRQn 0 */
   HAL_TIM_IRQHandler(&htim1);
   /* USER CODE BEGIN TIM1_UP_IRQn 1 */
 
-//    if(__HAL_TIM_GET_COUNTER(&htim1)==999){
-//        HAL_GPIO_TogglePin(LED_G1_GPIO_Port, LED_G1_Pin);
-//    }
+  
+  HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
 
   /* USER CODE END TIM1_UP_IRQn 1 */
 }
@@ -261,7 +259,14 @@ void USART1_IRQHandler(void)
   HAL_UART_IRQHandler(&huart1);
   /* USER CODE BEGIN USART1_IRQn 1 */
 
-  htim1_max = htim1_cnt+30;
+  //htim1_max = htim1_cnt+30;
+  
+  if(!htim1_en_irq){
+      htim1_en_irq = 1;
+      __HAL_TIM_ENABLE_IT(&htim1, TIM_IT_UPDATE);
+      __HAL_TIM_CLEAR_IT(&htim1, TIM_IT_UPDATE);
+  }
+  __HAL_TIM_SET_COUNTER(&htim1, 0);
   addToModbus();
   //HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
 
@@ -282,14 +287,15 @@ void USART1_IRQHandler(void)
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
-    HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 1);
+    //HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 1);
     if(huart->Instance == USART1)
     {
         endRxModbus();
-        HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
+        //HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
     }
     return;
 }
+
 
 void TIM_ResetCounter(TIM_TypeDef* TIMx)
 {
@@ -298,6 +304,17 @@ void TIM_ResetCounter(TIM_TypeDef* TIMx)
 
   /* Reset the Counter Register value */
   TIMx->CNT = 0;
+  return;
 }
+
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+    htim1_en_irq = 0;
+    startParseModbus();
+    __HAL_TIM_DISABLE_IT(&htim1, TIM_IT_UPDATE);
+    
+    return;  
+}
+
 /* USER CODE END 1 */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

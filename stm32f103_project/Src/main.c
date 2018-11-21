@@ -109,7 +109,36 @@ int main(void)
 
   
   HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
-  HAL_TIM_Base_Start_IT(&htim1);
+  //HAL_TIM_Base_Start_IT(&htim1);
+  HAL_TIM_Base_Start(&htim1);
+  
+// TEST
+//  uint32_t tim1_cnt0, tim1_cnt1;
+//  uint32_t tim1_border0=0, tim1_border1=2;
+//  
+//  uint32_t i=0, j=0;
+//  uint8_t buf_tx[16] = {'N','=','0','0','\n'};
+//  HAL_TIM_Base_Start(&htim1);
+//  
+//  j=__HAL_TIM_GET_AUTORELOAD(&htim1);
+//  buf_tx[2] += (int)(j/10);
+//  buf_tx[3] += j-buf_tx[2]+0x30;
+//  USARTN_RE_DE_TX;
+//  HAL_UART_Transmit(&huart1, buf_tx, 5, 1000);
+//  USARTN_RE_DE_RX;
+//  
+//  __HAL_TIM_SET_AUTORELOAD(&htim1, 50);
+//  while(1){
+//    //__HAL_TIM_SET_COUNTER(&htim1, tim1_cnt0+30);
+//    tim1_cnt0 =__HAL_TIM_GET_COUNTER(&htim1);
+//    if (tim1_cnt0==tim1_border0)
+//        HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 1);
+//    tim1_cnt0 =__HAL_TIM_GET_COUNTER(&htim1);
+//    if (tim1_cnt0==tim1_border1)
+//        HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
+//    
+//  }
+  
   
   // MODBUS
   InitModbusDB();
