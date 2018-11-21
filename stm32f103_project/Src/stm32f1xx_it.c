@@ -54,7 +54,6 @@ uint8_t flag_tim1=0;
 uint32_t htim1_max = 0, htim1_cnt=0; 
 uint32_t htim1_en_irq = 0;
 
-void TIM_ResetCounter(TIM_TypeDef* TIMx);
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
@@ -217,12 +216,14 @@ void SysTick_Handler(void)
 void TIM1_UP_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM1_UP_IRQn 0 */
+    
+    // for TIM_Start_Base_IT()
 
 //    htim1_cnt++;
 //    if(htim1_cnt==htim1_max){
 //        startParseModbus();
 //    }
-    HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 1);
+   //HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 1);
    //HAL_GPIO_TogglePin(LED_G1_GPIO_Port, LED_G1_Pin);
  
   /* USER CODE END TIM1_UP_IRQn 0 */
@@ -230,9 +231,27 @@ void TIM1_UP_IRQHandler(void)
   /* USER CODE BEGIN TIM1_UP_IRQn 1 */
 
   
-  HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
+  //HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
 
   /* USER CODE END TIM1_UP_IRQn 1 */
+}
+
+/**
+* @brief This function handles TIM1 capture compare interrupt.
+*/
+void TIM1_CC_IRQHandler(void)
+{
+  /* USER CODE BEGIN TIM1_CC_IRQn 0 */
+    
+    // for TIM_Start_OC_IT()
+    
+   //HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 1);
+  /* USER CODE END TIM1_CC_IRQn 0 */
+  HAL_TIM_IRQHandler(&htim1);
+  /* USER CODE BEGIN TIM1_CC_IRQn 1 */
+
+   //HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
+  /* USER CODE END TIM1_CC_IRQn 1 */
 }
 
 /**
@@ -263,8 +282,9 @@ void USART1_IRQHandler(void)
   
   if(!htim1_en_irq){
       htim1_en_irq = 1;
-      __HAL_TIM_ENABLE_IT(&htim1, TIM_IT_UPDATE);
-      __HAL_TIM_CLEAR_IT(&htim1, TIM_IT_UPDATE);
+      __HAL_TIM_SET_COUNTER(&htim1, 0);
+      __HAL_TIM_ENABLE_IT(&htim1, TIM_IT_CC4);
+      __HAL_TIM_CLEAR_IT(&htim1, TIM_IT_CC4);
   }
   __HAL_TIM_SET_COUNTER(&htim1, 0);
   addToModbus();
@@ -297,22 +317,27 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 }
 
 
-void TIM_ResetCounter(TIM_TypeDef* TIMx)
-{
-  /* Check the parameters */
-  assert_param(IS_TIM_ALL_PERIPH(TIMx));
+// Callbacks -- for DMA or IT only!!!
+// for TIM_BASE_Start_IT()
+//void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+//{
+//    //HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 1);
+//    htim1_en_irq = 0;
+//    startParseModbus();
+//    __HAL_TIM_DISABLE_IT(&htim1, TIM_IT_UPDATE);
+//    //HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
+//    return;  
+//}
+//
 
-  /* Reset the Counter Register value */
-  TIMx->CNT = 0;
-  return;
-}
-
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+// for TIM_OC_Start_IT()
+void HAL_TIM_OC_DelayElapsedCallback(TIM_HandleTypeDef *htim)
 {
+    HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 1);
     htim1_en_irq = 0;
     startParseModbus();
-    __HAL_TIM_DISABLE_IT(&htim1, TIM_IT_UPDATE);
-    
+    __HAL_TIM_DISABLE_IT(&htim1, TIM_IT_CC4);
+   HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
     return;  
 }
 

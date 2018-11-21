@@ -110,7 +110,11 @@ int main(void)
   
   HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
   //HAL_TIM_Base_Start_IT(&htim1);
-  HAL_TIM_Base_Start(&htim1);
+  //HAL_TIM_Base_Start(&htim1);
+  
+  //__HAL_TIM_ENABLE_IT(&htim1, TIM_IT_UPDATE);
+  HAL_TIM_OC_Start(&htim1, TIM_CHANNEL_4);
+  
   
 // TEST
 //  uint32_t tim1_cnt0, tim1_cnt1;
