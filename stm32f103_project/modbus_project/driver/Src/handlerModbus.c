@@ -23,6 +23,8 @@ uint8_t UnRxBuf[UN_BUF_SIZE]={0}; // buffer for received data
 uint16_t UnRxCnt=0;
 uint8_t UnRxFlag = 0;
 
+uint8_t UnIRQFlag = 0;
+
 uint8_t modbus_sm=0;
 
 //stm32f1xx_it.c
@@ -52,7 +54,7 @@ void InitModbusDB(void)
 void InitModbus(void)
 {
     receive_IT(UnRxBufIT, 1);
-    UnRxFlag = 0;
+    UnIRQFlag = 0;
     return;
 }
 
@@ -60,15 +62,16 @@ void HandlerModbus(void)
 {   
     switch(modbus_sm){
         case WAIT_QUERY:
-            if (UnRxFlag){ // wait for 1 byte to receive
+            if (UnIRQFlag){ // wait for 1 byte to receive
                 // receive by bytes: from extern
                 receive_IT(UnRxBufIT, 1);
-                UnRxFlag = 0;
+                UnIRQFlag = 0;
             }
                 
-//            if(flag_tim1){ // wait for timeout -- get frame (query)
-//               modbus_sm = PARSE_QUERY;
-//            }
+            if(UnRxFlag){ // wait for timeout -- get frame (query)
+               UnRxFlag = 0;
+               modbus_sm = PARSE_QUERY;
+            }
             break;
             
         case PARSE_QUERY:         
@@ -95,10 +98,10 @@ void HandlerModbus(void)
             
             // transmit and receive echo
             UnTxFlag = 1;
-            USARTN_RE_DE_TX;
             
             // receive bytes: echo-response
             receive_IT(UnRxBuf, UnRxTxSize);
+            USARTN_RE_DE_TX;
             transmit_IT(UnTxBuf, UnRxTxSize);
             //HAL_UART_Transmit_DMA(HUART, UnTxBuf, UnRxTxSize);
             
@@ -112,26 +115,25 @@ void HandlerModbus(void)
             USARTN_RE_DE_RX;
 
             // check echo-response (temp) 
-            {
-                UnRxBuf[0]+=0x10; 
-
-                USARTN_RE_DE_TX;
-                HAL_UART_Transmit(&huart1, UnRxBuf, UnRxTxSize, 1000);
-                USARTN_RE_DE_RX;
-                
-                // clear rx buffer
-                res = __HAL_UART_GET_FLAG(&huart1, UART_FLAG_RXNE);
-                while(res != 0){
-                HAL_UART_Receive(&huart1, UnRxBuf, 1, 100);
-                res = __HAL_UART_GET_FLAG(&huart1, UART_FLAG_RXNE);
-                }
-            }
+//            {
+//                UnRxBuf[0]+=0x10; 
+//
+//                USARTN_RE_DE_TX;
+//                HAL_UART_Transmit(&huart1, UnRxBuf, UnRxTxSize, 1000);
+//                USARTN_RE_DE_RX;
+//                
+//                // clear rx buffer
+//                res = __HAL_UART_GET_FLAG(&huart1, UART_FLAG_RXNE);
+//                while(res != 0){
+//                HAL_UART_Receive(&huart1, UnRxBuf, 1, 100);
+//                res = __HAL_UART_GET_FLAG(&huart1, UART_FLAG_RXNE);
+//                }
+//            }
 
             //clear rx_buffer and counter
             memset(&UnRxBuf, 0, UnRxTxSize);
             UnRxCnt = 0;
-            //flag_tim1 = 0;
-            UnRxFlag = 1;
+            UnIRQFlag = 1;
             
             modbus_sm = WAIT_QUERY;
             }
@@ -148,7 +150,7 @@ int handleRx(void)
 {    
     if(!UnTxFlag){
         UnRxBuf[(UnRxCnt++)%UN_BUF_SIZE] = UnRxBufIT[0];
-        UnRxFlag = 1;
+        UnIRQFlag = 1;
     }
     return 0;
 }
@@ -156,16 +158,20 @@ int handleRx(void)
 
 void endRx(void)
 {
-    if(UnTxFlag){
-        UnTxFlag = 2;
-    }
+    
+    return;
+}
+
+void endTx(void)
+{
+    UnTxFlag = 2;
     return;
 }
 
 void getFrame(void)
 {
     if(UnRxCnt>1){
-        modbus_sm = PARSE_QUERY;
+        UnRxFlag = 1;
     }
     return;
 }

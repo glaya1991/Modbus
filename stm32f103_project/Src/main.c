@@ -53,7 +53,13 @@
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
-
+// TEST UART_TX
+extern uint8_t UnTxFlag;
+// TEST UART_RX
+extern uint8_t modbus_sm;
+extern uint8_t UnIRQFlag;
+extern uint8_t UnRxBuf[UN_BUF_SIZE]; // buffer for received data
+extern uint16_t UnRxCnt;
 
 /* USER CODE END PV */
 
@@ -165,11 +171,47 @@ int main(void)
 //        HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
 //    
 //  }
+ 
+// TEST 3 -- UART_TX
+//  uint8_t *str="TEST01234\n";
+//  uint8_t res;
+//  while(1){
+//    HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 1);
+//    UnTxFlag = 1;
+//    USARTN_RE_DE_TX;
+//    HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
+//    HAL_UART_Transmit_IT(&huart1, str, 10);
+//    while(UnTxFlag==1);
+//    USARTN_RE_DE_RX;  
+//    
+//    HAL_Delay(1000); 
+//  }
+ 
+ // TEST 3 -- UART_RX
+//  uint8_t str[1];
+//  uint8_t res;
+//  
+//  receive_IT(str, 1);
+//  modbus_sm =0;
+//  while(1){
+//    if(UnRxFlag){
+//        receive_IT(str, 1);
+//        UnRxFlag = 0;
+//    }
+//    if(modbus_sm){
+//        HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 1);
+//        abort_receiveIT();
+//        modbus_sm = 0;
+//        UnRxCnt = 0;
+//        UnRxFlag = 1;
+//        HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
+//    }    
+//  } 
   
   
   // MAIN PROGRAM
   HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
-  // !!! if use MARCOS in stm32f1xx_it.c !!!
+  // !!! TIM_Start -- >if use MARCOS in stm32f1xx_it.c !!!
   //HAL_TIM_Base_Start(&htim1);
     
   // MODBUS

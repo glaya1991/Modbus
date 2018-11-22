@@ -33,6 +33,7 @@ void HandlerModbus(void);
 void getFrame(void);
 int handleRx(void);
 void endRx(void);
+void endTx(void);
 
 
 

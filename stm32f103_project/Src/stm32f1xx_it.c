@@ -45,7 +45,7 @@ extern uint8_t UnTxFlag;
 
 extern uint8_t UnRxBuf[UN_BUF_SIZE];
 extern uint16_t UnRxCnt;
-extern uint8_t UnRxFlag;
+extern uint8_t UnIRQFlag;
 
 //extern uint8_t u1rx_buf_[U1_BUF_SIZE];
 //extern uint8_t u1rx_buf_1byte[1];
@@ -320,28 +320,29 @@ void USART1_IRQHandler(void)
   if(htim1_en_irq)
   {
       //2
-    __HAL_TIM_SET_COUNTER(&htim1, 0);
+//    __HAL_TIM_SET_COUNTER(&htim1, 0);
       //3
-//    curCnt = __HAL_TIM_GET_COUNTER(&htim1);
-//    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, (uint32_t)(curCnt+365));   
+    curCnt = __HAL_TIM_GET_COUNTER(&htim1);
+    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, (uint32_t)(curCnt+365));   
   }
   else
   {
         htim1_en_irq = 1;
       // 2)
-         HAL_TIM_Base_Start_IT(&htim1);
+//         HAL_TIM_Base_Start_IT(&htim1);
         // (!!!) if use MARCOS -- no first IRQ at 1 byte receive (!!!)
-        //      __HAL_TIM_ENABLE_IT(&htim1, TIM_IT_UPDATE);
-        //      __HAL_TIM_CLEAR_IT(&htim1, TIM_IT_UPDATE);
-         
-      __HAL_TIM_SET_COUNTER(&htim1, 1);
+//              __HAL_TIM_ENABLE_IT(&htim1, TIM_IT_UPDATE);
+//              __HAL_TIM_CLEAR_IT(&htim1, TIM_IT_UPDATE);
+              
+//      __HAL_TIM_SET_COUNTER(&htim1, 0);
       // 3)
-//    curCnt = __HAL_TIM_GET_COUNTER(&htim1);
-//    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, (uint32_t)(curCnt+365));   
-//    HAL_TIM_OC_Start_IT(&htim1, TIM_CHANNEL_1);
+    curCnt = __HAL_TIM_GET_COUNTER(&htim1);
+    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, (uint32_t)(curCnt+365));   
+    HAL_TIM_OC_Start_IT(&htim1, TIM_CHANNEL_1);
   }
   
   handleRx();
+  
   //HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
 
   /* USER CODE END USART1_IRQn 1 */
@@ -351,20 +352,23 @@ void USART1_IRQHandler(void)
 
 
 
-//void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
-//{
-//    if(huart->Instance == USART1){
-//        endTxModbus();
-//    }
-//    return;
-//}
+void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
+{
+    if(huart->Instance == USART1){
+        HAL_GPIO_WritePin(LED_B1_GPIO_Port, LED_B1_Pin, 1);
+        endTx();
+        HAL_GPIO_WritePin(LED_B1_GPIO_Port, LED_B1_Pin, 0);
+    }
+    return;
+}
+
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
     //HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 1);
     if(huart->Instance == USART1)
     {
-        endRx();
+        //endRx();
         //HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
     }
     return;
@@ -375,14 +379,14 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 // for TIM_Base_Start_IT()
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-    HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 1);
+    //HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 1);
     // 2)
     // (!!!) if use MARCOS -- no first IRQ at 1 byte receive (!!!)
     //__HAL_TIM_DISABLE_IT(&htim1, TIM_IT_UPDATE);
     HAL_TIM_Base_Stop_IT(&htim1);
     htim1_en_irq = 0;
     getFrame();
-    HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
+    //HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
     return;  
 }
 
@@ -390,13 +394,13 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 // for TIM_OC_Start_IT()
 void HAL_TIM_OC_DelayElapsedCallback(TIM_HandleTypeDef *htim)
 {
-    HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 1);
+    //HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 1);
     // 3)
     // __HAL_TIM_DISABLE_IT(&htim1, TIM_IT_CC4);
     HAL_TIM_OC_Stop_IT(&htim1, TIM_CHANNEL_1);
     htim1_en_irq = 0;
     getFrame();
-    HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
+    //HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
     return;  
 }
 
