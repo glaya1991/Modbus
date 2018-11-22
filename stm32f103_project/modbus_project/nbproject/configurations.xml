@@ -145,7 +145,7 @@
             <pElem>.</pElem>
             <pElem>driver/Inc</pElem>
           </incDir>
-          <commandLine>-mthumb -mcpu=cortex-m3 -mfloat-abi=soft -Wall --specs=nosys.specs</commandLine>
+          <commandLine>-mthumb -mcpu=cortex-m3 -mfloat-abi=soft -Wall --specs=nosys.specs -Xlinker -Map=output.map</commandLine>
           <preprocessorList>
             <Elem>STM32F103xB</Elem>
           </preprocessorList>

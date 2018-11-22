@@ -65,7 +65,7 @@ OBJECTFILES= \
 
 
 # C Compiler Flags
-CFLAGS=-mthumb -mcpu=cortex-m3 -mfloat-abi=soft -Wall --specs=nosys.specs
+CFLAGS=-mthumb -mcpu=cortex-m3 -mfloat-abi=soft -Wall --specs=nosys.specs -Xlinker -Map=output.map
 
 # CC Compiler Flags
 CCFLAGS=

@@ -164,7 +164,7 @@ void endRx(void)
 
 void getFrame(void)
 {
-    if(UnRxCnt){
+    if(UnRxCnt>1){
         modbus_sm = PARSE_QUERY;
     }
     return;

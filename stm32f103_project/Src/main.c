@@ -108,15 +108,38 @@ int main(void)
   /* USER CODE BEGIN WHILE */
 
   
-  HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
-  //HAL_TIM_Base_Start_IT(&htim1);
-  //HAL_TIM_Base_Start(&htim1);
+//TEST1
+//  uint32_t curCnt;
+//  uint8_t str[10];
+//  HAL_TIM_OC_Start_IT(&htim1, TIM_CHANNEL_1);
+//  while(1){
+//    curCnt = __HAL_TIM_GET_COMPARE(&htim1, TIM_CHANNEL_1);
+//    str[0]='N';
+//    str[1]='0';
+//    str[2]=(curCnt>>24)&0xFF;
+//    str[3]=(curCnt>>16)&0xFF;
+//    str[4]=(curCnt>>8)&0xFF;
+//    str[5]=(curCnt)&0xFF;
+//    str[6]='\n';
+//    USARTN_RE_DE_TX;
+//    HAL_UART_Transmit(&huart1, str, 7, 100);
+//    USARTN_RE_DE_RX;
+//    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, (uint32_t)(curCnt+365)); 
+//    curCnt = __HAL_TIM_GET_COMPARE(&htim1, TIM_CHANNEL_1);
+//    str[0]='N';
+//    str[1]='1';
+//    str[2]=(curCnt>>24)&0xFF;
+//    str[3]=(curCnt>>16)&0xFF;
+//    str[4]=(curCnt>>8)&0xFF;
+//    str[5]=(curCnt)&0xFF;
+//    str[6]='\n';
+//    USARTN_RE_DE_TX;
+//    HAL_UART_Transmit(&huart1, str, 7, 100);
+//    USARTN_RE_DE_RX;
+//    HAL_Delay(1000);
+//  }
   
-  //__HAL_TIM_ENABLE_IT(&htim1, TIM_IT_UPDATE);
-  //HAL_TIM_OC_Start(&htim1, TIM_CHANNEL_4);
-  
-  
-// TEST
+// TEST2
 //  uint32_t tim1_cnt0, tim1_cnt1;
 //  uint32_t tim1_border0=0, tim1_border1=2;
 //  
@@ -144,6 +167,11 @@ int main(void)
 //  }
   
   
+  // MAIN PROGRAM
+  HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
+  // !!! if use MARCOS in stm32f1xx_it.c !!!
+  //HAL_TIM_Base_Start(&htim1);
+    
   // MODBUS
   InitModbusDB();
   InitModbus();
