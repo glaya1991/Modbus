@@ -255,6 +255,7 @@ void TIM1_CC_IRQHandler(void)
 /**
 * @brief This function handles USART1 global interrupt.
 */
+uint8_t irq_cnt = 0;
 void USART1_IRQHandler(void)
 {
   /* USER CODE BEGIN USART1_IRQn 0 */
@@ -275,9 +276,9 @@ void USART1_IRQHandler(void)
     //          T_3.5symbol = 85*3.5 = 300 us
     //          cnt_3.5symbol = T_3.5symbol/Tperiod = 60
     
-    // 2) Timer_OC (Output compare --> compare with "capture register"):
+    // 2) Timer_OC (Output compare --> compare with "capture register"): // see tim.c --> Init!!!
     //          in void MX_TIM1_Init(void):
-    //              htim1.Init.Period = 365; 
+    //              htim1.Init.Period = 65535; 
     //          ToDo:
     //          0. first RX: Start Timer
     //          1. read current counter: __HAL_TIM_GET_COUNTER()
@@ -289,9 +290,9 @@ void USART1_IRQHandler(void)
     //          Tperiod = 65535 us (0xFFFF) 
     //          Tpulse = current + T_3.5symbol = current + 365 us
     
-    // 3) Timer_Base (If cnt == period --> reset (update)):
+    // 3) Timer_Base (If cnt == period --> reset (update)): // see tim.c --> Init!!!
     //          in void MX_TIM1_Init(void):
-    //              htim1.Init.Period = 65535; 
+    //              htim1.Init.Period = 365; 
     //          ToDo:
     //          0. first RX: Start Timer
     //          1. reset current counter: __HAL_TIM_SET_COUNTER(0)
@@ -309,6 +310,7 @@ void USART1_IRQHandler(void)
 //      HAL_GPIO_TogglePin(LED_G1_GPIO_Port, LED_G1_Pin);
 //  }
     
+    HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 1);
   /* USER CODE END USART1_IRQn 0 */
   HAL_UART_IRQHandler(&huart1);
   /* USER CODE BEGIN USART1_IRQn 1 */
@@ -342,6 +344,9 @@ void USART1_IRQHandler(void)
   }
   
   handleRx();
+  HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
+  
+  irq_cnt++;
   
   //HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
 

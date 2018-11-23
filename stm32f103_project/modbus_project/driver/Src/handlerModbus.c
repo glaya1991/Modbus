@@ -41,6 +41,8 @@ TConst( TPartitionU16s16 )  MODICON_DB = { &Reg16[0], (NREG16<<1)};
 
 uint8_t gi=0, gj=0, res;  //test
 
+extern uint8_t irq_cnt;
+
 void InitModbusDB(void)
 {
     uint16_t i=0, j=0x0030;
@@ -103,6 +105,7 @@ void HandlerModbus(void)
             // receive bytes: echo-response
             receive_IT(UnRxBuf, UnRxTxSize);
             USARTN_RE_DE_TX;
+            irq_cnt = 0;
             transmit_IT(UnTxBuf, UnRxTxSize);
             //HAL_UART_Transmit_DMA(HUART, UnTxBuf, UnRxTxSize);
             
@@ -121,10 +124,10 @@ void HandlerModbus(void)
         
         case WAIT_ECHO:
             if (UnRxFlag == 1){ 
-                HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 1);
               // check echo-response (temp) 
             {
                 UnRxBuf[0]+=0x10; 
+                UnRxBuf[1]=irq_cnt; 
 
                 USARTN_RE_DE_TX;
                 HAL_UART_Transmit(&huart1, UnRxBuf, UnRxTxSize, 100);
@@ -144,7 +147,6 @@ void HandlerModbus(void)
             UnRxFlag = 0;
             UnIRQFlag = 1;
             modbus_sm = WAIT_QUERY;
-            HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
             }
             break;
              
