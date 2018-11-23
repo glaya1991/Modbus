@@ -2426,7 +2426,7 @@ static HAL_StatusTypeDef UART_Receive_IT(UART_HandleTypeDef *huart)
     }
     else
     {
-      HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 1);
+      //HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 1);
       if(huart->Init.Parity == UART_PARITY_NONE)
       {
         *huart->pRxBuffPtr++ = (uint8_t)(huart->Instance->DR & (uint8_t)0x00FF);
@@ -2435,7 +2435,7 @@ static HAL_StatusTypeDef UART_Receive_IT(UART_HandleTypeDef *huart)
       {
         *huart->pRxBuffPtr++ = (uint8_t)(huart->Instance->DR & (uint8_t)0x007F);
       }
-      HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
+      //HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
     }
 
     if(--huart->RxXferCount == 0U)

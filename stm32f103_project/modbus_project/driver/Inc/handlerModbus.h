@@ -23,7 +23,8 @@ extern "C" {
 #define WAIT_QUERY          0
 #define PARSE_QUERY         1
 #define SEND_RESPONSE       2    
-#define WAIT_RESPONSE       3    
+#define WAIT_RESPONSE       3  
+#define WAIT_ECHO           4
    
 void InitModbusDB(void);
 

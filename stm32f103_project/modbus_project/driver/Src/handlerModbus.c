@@ -20,6 +20,7 @@ uint8_t UnTxFlag = 0;
 
 uint8_t UnRxBufIT[UN_BUF_SIZE]={0}; //buffer for receiving 1 byte (for unknown size of query)
 uint8_t UnRxBuf[UN_BUF_SIZE]={0}; // buffer for received data
+uint8_t UnRxBufEcho[UN_BUF_SIZE]={0}; // buffer for received data
 uint16_t UnRxCnt=0;
 uint8_t UnRxFlag = 0;
 
@@ -113,33 +114,40 @@ void HandlerModbus(void)
             //HAL_Delay(1);   // (?)temp delay: add one more case for last symbol
             UnTxFlag = 0;
             USARTN_RE_DE_RX;
+            
+            modbus_sm = WAIT_ECHO;
+            }
+            break;
+        
+        case WAIT_ECHO:
+            if (UnRxFlag == 1){ 
+                HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 1);
+              // check echo-response (temp) 
+            {
+                UnRxBuf[0]+=0x10; 
 
-            // check echo-response (temp) 
-//            {
-//                UnRxBuf[0]+=0x10; 
-//
-//                USARTN_RE_DE_TX;
-//                HAL_UART_Transmit(&huart1, UnRxBuf, UnRxTxSize, 1000);
-//                USARTN_RE_DE_RX;
-//                
-//                // clear rx buffer
-//                res = __HAL_UART_GET_FLAG(&huart1, UART_FLAG_RXNE);
-//                while(res != 0){
-//                HAL_UART_Receive(&huart1, UnRxBuf, 1, 100);
-//                res = __HAL_UART_GET_FLAG(&huart1, UART_FLAG_RXNE);
-//                }
-//            }
+                USARTN_RE_DE_TX;
+                HAL_UART_Transmit(&huart1, UnRxBuf, UnRxTxSize, 100);
+                USARTN_RE_DE_RX;
+                
+                // clear rx buffer
+                res = __HAL_UART_GET_FLAG(&huart1, UART_FLAG_RXNE);
+                while(res != 0){
+                HAL_UART_Receive(&huart1, UnRxBuf, 1, 100);
+                res = __HAL_UART_GET_FLAG(&huart1, UART_FLAG_RXNE);
+                }
+            }
 
             //clear rx_buffer and counter
             memset(&UnRxBuf, 0, UnRxTxSize);
             UnRxCnt = 0;
+            UnRxFlag = 0;
             UnIRQFlag = 1;
-            
             modbus_sm = WAIT_QUERY;
+            HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
             }
             break;
-            
-            
+             
         default:
             break;
     }
@@ -148,10 +156,10 @@ void HandlerModbus(void)
 
 int handleRx(void)
 {    
-    if(!UnTxFlag){
+    //if(!UnTxFlag){
         UnRxBuf[(UnRxCnt++)%UN_BUF_SIZE] = UnRxBufIT[0];
         UnIRQFlag = 1;
-    }
+    //}
     return 0;
 }
 
