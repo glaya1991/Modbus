@@ -14,7 +14,6 @@ uint16_t Reg16[NREG16]={0};
 
 // RS485 Transfer (UART + USART1_RE_DE_Pin)
 uint8_t UnTxBuf[UN_BUF_SIZE]={0};
-uint8_t UnTxErr[6]={'E', 'R', 'R', 'O', 'R', '\n'};
 uint16_t UnTxCnt = 0;
 uint8_t UnTxFlag = 0;
 
@@ -28,6 +27,9 @@ uint8_t UnIRQFlag = 0;
 
 uint8_t modbus_sm=0;
 uint8_t ResponseFlag = 0;
+
+uint16_t ParseErr = 0;
+uint8_t Statistic[10]={0}; // buffer statistic
 
 //stm32f1xx_it.c
 //extern uint8_t flag_tim1;
@@ -46,7 +48,7 @@ extern uint8_t irq_cnt;
 
 void InitModbusDB(void)
 {
-    uint16_t i=0, j=0x0030;
+    uint16_t i=0, j=0x0000;
     uint16_t N=(MODICON_DB.Size>>1);
     for(i=0; i<N; i++){
         MODICON_DB.ADR[i] = (uint16_t)((j<<8)|(j+1));
@@ -59,6 +61,7 @@ void InitModbus(void)
 {
     receive_IT(UnRxBufIT, 1);
     UnIRQFlag = 0;
+    ParseErr = 0;
     return;
 }
 
@@ -86,15 +89,20 @@ void HandlerModbus(void)
             memcpy(&UnTxBuf, &UnRxBuf, UnRxCnt);
             UnRxTxSize = UnRxCnt;
             UnRxCnt = 0;                            // temp
-            memset(&UnRxBuf, 0xFF, UnRxTxSize);     // temp
+            memset(&UnRxBuf, 0x00, UnRxTxSize);     // temp
             
             //parse
             if(MODBUStrasact()){
                 //memcpy(&UnTxBuf, &UnTxErr, 6);
-                UnRxTxSize = 6; //error case: not finished
+                //UnRxTxSize = 6; //error case: not finished
+                ParseErr++;
+                Statistic[0] = ParseErr;
+                Reg16[0] = Statistic[0];    // make function for copy statistic to modicon reg (Reg16)!!!
+                modbus_sm = WAIT_QUERY;
+            }else{
+                modbus_sm = SEND_RESPONSE;
             }
 
-            modbus_sm = SEND_RESPONSE;
             break;
         
         case SEND_RESPONSE: 
@@ -125,21 +133,21 @@ void HandlerModbus(void)
             abort_receiveIT();
             
              // check echo-response (temp) 
-            {
-                UnRxBuf[0]+=0x10; 
-                UnRxBuf[1]=irq_cnt; 
-
-                USARTN_RE_DE_TX;
-                HAL_UART_Transmit(&huart1, UnRxBuf, UnRxTxSize, 100);
-                USARTN_RE_DE_RX;
-                
-                // clear rx buffer
-                res = __HAL_UART_GET_FLAG(&huart1, UART_FLAG_RXNE);
-                while(res != 0){
-                HAL_UART_Receive(&huart1, UnRxBuf, 1, 100);
-                res = __HAL_UART_GET_FLAG(&huart1, UART_FLAG_RXNE);
-                }
-            }
+//            {
+//                UnRxBuf[0]+=0x10; 
+//                UnRxBuf[1]=irq_cnt; 
+//
+//                USARTN_RE_DE_TX;
+//                HAL_UART_Transmit(&huart1, UnRxBuf, UnRxTxSize, 100);
+//                USARTN_RE_DE_RX;
+//                
+//                // clear rx buffer
+//                res = __HAL_UART_GET_FLAG(&huart1, UART_FLAG_RXNE);
+//                while(res != 0){
+//                HAL_UART_Receive(&huart1, UnRxBuf, 1, 100);
+//                res = __HAL_UART_GET_FLAG(&huart1, UART_FLAG_RXNE);
+//                }
+//            }
 
             //clear rx_buffer and counter
             memset(&UnRxBuf, 0, UnRxTxSize);
