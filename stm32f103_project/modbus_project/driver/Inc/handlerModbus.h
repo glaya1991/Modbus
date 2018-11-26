@@ -25,6 +25,7 @@ extern "C" {
 #define SEND_RESPONSE       2    
 #define WAIT_RESPONSE       3  
 #define WAIT_ECHO           4
+#define PARSE_RESPONSE      5
    
 void InitModbusDB(void);
 

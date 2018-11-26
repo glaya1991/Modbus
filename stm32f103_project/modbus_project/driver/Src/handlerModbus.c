@@ -27,6 +27,7 @@ uint8_t UnRxFlag = 0;
 uint8_t UnIRQFlag = 0;
 
 uint8_t modbus_sm=0;
+uint8_t ResponseFlag = 0;
 
 //stm32f1xx_it.c
 //extern uint8_t flag_tim1;
@@ -73,13 +74,14 @@ void HandlerModbus(void)
                 
             if(UnRxFlag){ // wait for timeout -- get frame (query)
                UnRxFlag = 0;
-               modbus_sm = PARSE_QUERY;
+                if(ResponseFlag)
+                    modbus_sm = PARSE_RESPONSE;
+                else
+                    modbus_sm = PARSE_QUERY;
             }
             break;
             
-        case PARSE_QUERY:         
-            HAL_GPIO_TogglePin(LED_B1_GPIO_Port, LED_B1_Pin);           
-
+        case PARSE_QUERY:                  
             //copy rx_buffer
             memcpy(&UnTxBuf, &UnRxBuf, UnRxCnt);
             UnRxTxSize = UnRxCnt;
@@ -102,16 +104,54 @@ void HandlerModbus(void)
             // transmit and receive echo
             UnTxFlag = 1;
             
+            //clear rx_buffer and counter
+            memset(&UnRxBuf, 0, UnRxTxSize);
+            UnRxCnt = 0;
+            UnRxFlag = 0;
+            ResponseFlag = 1;
+            
             // receive bytes: echo-response
-            receive_IT(UnRxBuf, UnRxTxSize);
+            receive_IT(UnRxBufIT, 1); //UnRxTxSize
             USARTN_RE_DE_TX;
             irq_cnt = 0;
             transmit_IT(UnTxBuf, UnRxTxSize);
             //HAL_UART_Transmit_DMA(HUART, UnTxBuf, UnRxTxSize);
             
-            modbus_sm = WAIT_RESPONSE;
+            modbus_sm = WAIT_QUERY;  //WAIT_RESPONSE
             break;
+        
+        case PARSE_RESPONSE:
+            ResponseFlag = 0;
+            abort_receiveIT();
+            
+             // check echo-response (temp) 
+            {
+                UnRxBuf[0]+=0x10; 
+                UnRxBuf[1]=irq_cnt; 
+
+                USARTN_RE_DE_TX;
+                HAL_UART_Transmit(&huart1, UnRxBuf, UnRxTxSize, 100);
+                USARTN_RE_DE_RX;
                 
+                // clear rx buffer
+                res = __HAL_UART_GET_FLAG(&huart1, UART_FLAG_RXNE);
+                while(res != 0){
+                HAL_UART_Receive(&huart1, UnRxBuf, 1, 100);
+                res = __HAL_UART_GET_FLAG(&huart1, UART_FLAG_RXNE);
+                }
+            }
+
+            //clear rx_buffer and counter
+            memset(&UnRxBuf, 0, UnRxTxSize);
+            UnRxCnt = 0;
+            UnRxFlag = 0;
+            UnIRQFlag = 1;
+            irq_cnt =0;
+            modbus_sm = WAIT_QUERY;
+            
+            break;
+            
+        /*   
         case WAIT_RESPONSE:
             if (UnTxFlag != 1){   
             //HAL_Delay(1);   // (?)temp delay: add one more case for last symbol
@@ -124,7 +164,8 @@ void HandlerModbus(void)
         
         case WAIT_ECHO:
             if (UnRxFlag == 1){ 
-              // check echo-response (temp) 
+                
+            // check echo-response (temp) 
             {
                 UnRxBuf[0]+=0x10; 
                 UnRxBuf[1]=irq_cnt; 
@@ -149,6 +190,7 @@ void HandlerModbus(void)
             modbus_sm = WAIT_QUERY;
             }
             break;
+         */
              
         default:
             break;
@@ -174,7 +216,9 @@ void endRx(void)
 
 void endTx(void)
 {
-    UnTxFlag = 2;
+    //UnTxFlag = 2;
+    UnTxFlag = 0;
+    USARTN_RE_DE_RX;
     return;
 }
 

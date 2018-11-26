@@ -302,15 +302,17 @@ void USART1_IRQHandler(void)
     // TIM:     Tstep= Prescaler*Tclk = 1us
     //          Tperiod = T_3.5symbol = 365us
     
-
-     
+   
 //  uint32_t isrflags   = (READ_REG(huart1.Instance->SR)); 
-//  uint32_t cr1its   = (READ_REG(huart1.Instance->CR1)); 
+//  uint32_t cr1its   = (READ_REG(huart1.Instance->CR1));  
 //  if(((isrflags & USART_SR_RXNE) != RESET) && ((cr1its & USART_CR1_RXNEIE) != RESET)){
 //      HAL_GPIO_TogglePin(LED_G1_GPIO_Port, LED_G1_Pin);
 //  }
     
-    HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 1);
+
+    
+ HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 1);
+ 
   /* USER CODE END USART1_IRQn 0 */
   HAL_UART_IRQHandler(&huart1);
   /* USER CODE BEGIN USART1_IRQn 1 */
@@ -343,7 +345,8 @@ void USART1_IRQHandler(void)
     HAL_TIM_OC_Start_IT(&htim1, TIM_CHANNEL_1);
   }
   
-  handleRx();
+  //handleRx();
+
   HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
   
   irq_cnt++;
@@ -360,9 +363,7 @@ void USART1_IRQHandler(void)
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 {
     if(huart->Instance == USART1){
-        HAL_GPIO_WritePin(LED_B1_GPIO_Port, LED_B1_Pin, 1);
         endTx();
-        HAL_GPIO_WritePin(LED_B1_GPIO_Port, LED_B1_Pin, 0);
     }
     return;
 }
@@ -370,11 +371,12 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
-    //HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 1);
     if(huart->Instance == USART1)
     {
+        HAL_GPIO_WritePin(LED_B1_GPIO_Port, LED_B1_Pin, 1);
+        handleRx();
         //endRx();
-        //HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
+       HAL_GPIO_WritePin(LED_B1_GPIO_Port, LED_B1_Pin, 0);
     }
     return;
 }
@@ -399,13 +401,13 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 // for TIM_OC_Start_IT()
 void HAL_TIM_OC_DelayElapsedCallback(TIM_HandleTypeDef *htim)
 {
-    //HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 1);
+    HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 1);
     // 3)
     // __HAL_TIM_DISABLE_IT(&htim1, TIM_IT_CC4);
     HAL_TIM_OC_Stop_IT(&htim1, TIM_CHANNEL_1);
     htim1_en_irq = 0;
     getFrame();
-    //HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
+    HAL_GPIO_WritePin(LED_G1_GPIO_Port, LED_G1_Pin, 0);
     return;  
 }
 

@@ -2358,9 +2358,9 @@ static HAL_StatusTypeDef UART_Transmit_IT(UART_HandleTypeDef *huart)
     } 
     else
     {
-      HAL_GPIO_WritePin(LED_B1_GPIO_Port, LED_B1_Pin, 1);
+      //HAL_GPIO_WritePin(LED_B1_GPIO_Port, LED_B1_Pin, 1);
       huart->Instance->DR = (uint8_t)(*huart->pTxBuffPtr++ & (uint8_t)0x00FF);
-      HAL_GPIO_WritePin(LED_B1_GPIO_Port, LED_B1_Pin, 0);
+      //HAL_GPIO_WritePin(LED_B1_GPIO_Port, LED_B1_Pin, 0);
     }
 
     if(--huart->TxXferCount == 0U)
